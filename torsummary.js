@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.11
+// @version      0.11.1
 // @license      GPL-3.0 License
-// @description  Count the seeding torrents, support ADE, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao
+// @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao
 // @author       ccf2012
-// @source       https://github.com/ccf-2012/ptnote
+// @source       https://github.com/ccf-2012/torsummary
+// @match        https://audiences.me/userdetails.php?id=*
 // @match        https://hdsky.me/userdetails.php?id=*
 // @match        https://ourbits.club/userdetails.php?id=*
 // @match        https://chdbits.co/userdetails.php?id=*
@@ -19,7 +20,6 @@
 // @match        https://springsunday.net/userdetails.php?id=*
 // @match        https://pterclub.com/userdetails.php?id=*
 // @match        https://ptsbao.club/userdetails.php?id=*
-// @match        https://audiences.me/userdetails.php?id=*
 // @icon         https://ourbits.club//favicon.ico
 // @grant        GM_addElement
 // @grant        GM_addStyle
@@ -28,7 +28,7 @@
 var config = [
     {
       host: "audiences.me",
-      abbrev: "ADE", 
+      abbrev: "Ace", 
       seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
