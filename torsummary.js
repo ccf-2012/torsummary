@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.11.1
+// @version      0.11.2
 // @license      GPL-3.0 License
 // @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao
 // @author       ccf2012
@@ -857,7 +857,12 @@ var config = [
       if (theConfig.useTitle) torName = seedList[i].title;
       else torName = seedList[i].innerText;
   
-      torSize = sizeStrToBytes(seedListSize[i + 1].innerText);
+      if (theConfig.host == "club.hares.top") {
+        torSize = sizeStrToBytes(seedListSize[i].innerText);
+      }
+      else {
+        torSize = sizeStrToBytes(seedListSize[i + 1].innerText);
+      }
       totalTorCount ++;
       totalTorSize += torSize;
   
