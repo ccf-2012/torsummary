@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.11.2
+// @version      0.11.3
 // @license      GPL-3.0 License
-// @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao
+// @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool
 // @author       ccf2012
 // @source       https://github.com/ccf-2012/torsummary
 // @match        https://audiences.me/userdetails.php?id=*
@@ -20,6 +20,7 @@
 // @match        https://springsunday.net/userdetails.php?id=*
 // @match        https://pterclub.com/userdetails.php?id=*
 // @match        https://ptsbao.club/userdetails.php?id=*
+// @match        https://*.btschool.club/userdetails.php?id=*
 // @icon         https://ourbits.club//favicon.ico
 // @grant        GM_addElement
 // @grant        GM_addStyle
@@ -735,6 +736,50 @@ var config = [
         {
           groupName: 'FHDMv',
           groupRegex: /[@-]\s?(FHDMv)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        }
+      ],
+      useTitle: true,
+      torCount: 0,
+      torSize: 0,
+    },
+    {
+      host: "pt.btschool.club",
+      abbrev: "Bts", 
+      seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
+      seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
+      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedingSummary: "#ka1 > b",
+      siteRegex: /[@-]\s?(Bts)/i,
+      seederLevels: [
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+      ],
+      groups: [
+        { 
+          groupName: 'BtsHD',
+          groupRegex : /[@-]\s?(BtsHD)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'BtsTV',
+          groupRegex: /[@-]\s?(BtsTV)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'BtsPAD',
+          groupRegex: /[@-]\s?(BtsPAD)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'Zone',
+          groupRegex: /[@-]\s?(Zone)\b/i,
           groupCount: 0,
           groupSize: 0,
         }
