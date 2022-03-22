@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.11.3
+// @version      0.11.4
 // @license      GPL-3.0 License
 // @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool
 // @author       ccf2012
@@ -815,7 +815,20 @@ var config = [
       torSize: 0,
     },
     {
-      host: "google.com",
+      host: "lemonhd.org",
+      abbrev: "LemonHD", 
+      seedList: "",
+      seedListSize: "",
+      seedingSummary: "",
+      siteRegex: /[@-]\s?(LHD|LeagueHD|LeagueNF|LeagueTV|LeagueCD|LeagueWEB|i18n|CiNT)/i,
+      groups:[],
+      seederLevels: [],
+      useTitle: false,
+      torCount: 0,
+      torSize: 0,
+    },
+    {
+      host: "pt.hd4fans.org",
       abbrev: "beAst", 
       seedList: "",
       seedListSize: "",
