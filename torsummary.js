@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.11.4
+// @version      0.11.5
 // @license      GPL-3.0 License
 // @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool
 // @author       ccf2012
@@ -638,7 +638,7 @@ var config = [
       seedListSize: "#ka2 > table > tbody > tr > td:nth-child(4)",
       seedListSeederCount: "#ka2 > table > tbody > tr > td:nth-child(5)",
       seedingSummary:
-        "#main_table > tbody > tr:nth-child(1) > td > table > tbody > tr > td > table > tbody > tr:nth-child(16) > td:nth-child(2)",
+        "#ka2",
       siteRegex: /[@-]\s?(TTG|Wiki|NGB|DoA|ARiN|ExREN)/i,
       seederLevels: [
         {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
@@ -855,7 +855,7 @@ var config = [
     },
   ];
   
-  const TTG_INDEX = 11;
+  const TTG_INDEX = 12;
   var OTHERS_INDEX = config.length-1;
   
   function formatBytes(bytes, decimals = 2) {
