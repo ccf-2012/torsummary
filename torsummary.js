@@ -22,7 +22,8 @@
 // @match        https://ptsbao.club/userdetails.php?id=*
 // @match        https://*.btschool.club/userdetails.php?id=*
 // @match        https://*.beitai.pt/userdetails.php?id=*
-// @match        https://*.m-team.cc/userdetails.php?id=*
+// @match        https://kp.m-team.cc/userdetails.php?id=*
+// @match        https://u2.dmhy.org/userdetails.php?id=*
 // @icon         https://ourbits.club//favicon.ico
 // @grant        GM_addElement
 // @grant        GM_addStyle
@@ -887,6 +888,12 @@ var config = [
           groupRegex : /[@-]\s?(TnP)\b/i,
           groupCount: 0,
           groupSize: 0,
+        },
+        { 
+          groupName: 'MTeamTV',
+          groupRegex : /[@-]\s?(TnP)\b/i,
+          groupCount: 0,
+          groupSize: 0,
         }
       ],
       useTitle: true,
@@ -915,6 +922,51 @@ var config = [
       siteRegex: /[@-]\s?(PuTao)\b/i,
       seederLevels: [],
       groups:[],
+      useTitle: false,
+      torCount: 0,
+      torSize: 0,
+    },
+    {
+      host: "beyond-hd.me",
+      abbrev: "BHD", 
+      seedList: "",
+      seedListSize: "",
+      seedingSummary: "",
+      siteRegex: /[@-]\s?(FraMeSToR|BHDStudio|BeyondHD|MKVULTRA)\b/i,
+      seederLevels: [],
+      groups:[],
+      useTitle: false,
+      torCount: 0,
+      torSize: 0,
+    },
+    {
+      host: "u2.dmhy.org",
+      abbrev: "U2", 
+      seedList: "#ka1 > table > tbody > tr > td:nth-child(2) a",
+      seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
+      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedingSummary: "#ka1 > b",
+      siteRegex: /[\[@-]\s?(U2娘@Share|U2-Rip)/i,
+      seederLevels: [
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+      ],
+      groups: [
+        { 
+          groupName: 'U2娘@Share',
+          groupRegex : /[\[@-]\s?(U2娘@Share)/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'U2-Rip',
+          groupRegex : /[@-]\s?(U2-Rip)/i,
+          groupCount: 0,
+          groupSize: 0,
+        }
+      ],
       useTitle: false,
       torCount: 0,
       torSize: 0,
