@@ -3,7 +3,7 @@
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
 // @version      0.11.5
 // @license      GPL-3.0 License
-// @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool
+// @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool, BeiTai, Mteam
 // @author       ccf2012
 // @source       https://github.com/ccf-2012/torsummary
 // @match        https://audiences.me/userdetails.php?id=*
@@ -21,6 +21,8 @@
 // @match        https://pterclub.com/userdetails.php?id=*
 // @match        https://ptsbao.club/userdetails.php?id=*
 // @match        https://*.btschool.club/userdetails.php?id=*
+// @match        https://*.beitai.pt/userdetails.php?id=*
+// @match        https://*.m-team.cc/userdetails.php?id=*
 // @icon         https://ourbits.club//favicon.ico
 // @grant        GM_addElement
 // @grant        GM_addStyle
@@ -804,13 +806,26 @@ var config = [
     {
       host: "beitai.pt",
       abbrev: "BeiTai", 
-      seedList: "",
-      seedListSize: "",
-      seedingSummary: "",
+      seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
+      seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
+      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(BeiTai)/i,
-      groups:[],
-      seederLevels: [],
-      useTitle: false,
+      seederLevels: [
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+      ],
+      groups: [
+        { 
+          groupName: 'BeiTai',
+          groupRegex : /[@-]\s?(BeiTai)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        }
+      ],
+      useTitle: true,
       torCount: 0,
       torSize: 0,
     },
@@ -837,6 +852,50 @@ var config = [
       seederLevels: [],
       groups:[],
       useTitle: false,
+      torCount: 0,
+      torSize: 0,
+    },
+    {
+      host: "m-team.cc",
+      abbrev: "MTeam", 
+      seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
+      seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
+      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedingSummary: "#ka1 > b",
+      siteRegex: /[@-]\s?(MTeam|MPAD|TnP|MTeamTV)/i,
+      seederLevels: [
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+      ],
+      groups: [
+        { 
+          groupName: 'MTeam',
+          groupRegex : /[@-]\s?(MTeam)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'MPAD',
+          groupRegex : /[@-]\s?(MPAD)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'TnP',
+          groupRegex : /[@-]\s?(TnP)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'MTeamTV',
+          groupRegex : /[@-]\s?(MTeamTV)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        }
+      ],
+      useTitle: true,
       torCount: 0,
       torSize: 0,
     },
@@ -973,15 +1032,20 @@ var config = [
         config[OTHERS_INDEX].torSize += torSize;
       }
     }
-  
-    GM_addStyle("#ot_block {font-weight: bold;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}");
-    GM_addStyle("#ot_block td, #ot_summary th{vertical-align: top;border: none;padding: 18px;}");
-  
-    GM_addStyle("#ot_summary {font-weight: normal;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}");
-    GM_addStyle("#ot_summary tr:nth-child(even){background-color: #f2f2f2;}");
-    GM_addStyle("#ot_summary tr:hover {background-color: #ddd;}");
-    GM_addStyle("#ot_summary td, #ot_summary th{border: 1px solid #ddd;padding: 4px;}");
-    GM_addStyle("#ot_summary th{padding-top: 6px;padding-bottom: 6px;text-align: left;color: white;background-color: #2f4879;}");
+
+    var styles = "#ot_block {font-weight: bold;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}";
+    styles += "#ot_block {font-weight: bold;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}";
+    styles += "#ot_block td, #ot_summary th{vertical-align: top;border: none;padding: 18px;}";
+
+    styles += "#ot_summary {font-weight: normal;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}";
+    styles += "#ot_summary tr:nth-child(even){background-color: #f2f2f2;}";
+    styles += "#ot_summary tr:hover {background-color: #ddd;}";
+    styles += "#ot_summary td, #ot_summary th{border: 1px solid #ddd;padding: 4px;}";
+    styles += "#ot_summary th{padding-top: 6px;padding-bottom: 6px;text-align: left;color: white;background-color: #2f4879;}";
+
+    var styleSheet = document.createElement("style")
+    styleSheet.innerText = styles
+    document.head.appendChild(styleSheet)
   
     var groupSumary = '<table id="ot_summary"><tbody><th>官组</th><th>数量</th><th>大小</th>';
     for (i=0; i<theConfig.groups.length; i++){
