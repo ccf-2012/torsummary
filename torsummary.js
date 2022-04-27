@@ -758,7 +758,8 @@ var config = [
         {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
-        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0},
       ],
       groups: [
         { 
@@ -841,7 +842,8 @@ var config = [
         {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
-        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0},
       ],
       groups:[
         { 
@@ -874,7 +876,8 @@ var config = [
         {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
-        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0},
       ],
       groups:[
         { 
