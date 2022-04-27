@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.11.5
+// @version      0.12
 // @license      GPL-3.0 License
-// @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool
+// @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool, TLF, beAst
 // @author       ccf2012
 // @source       https://github.com/ccf-2012/torsummary
 // @match        https://audiences.me/userdetails.php?id=*
@@ -21,6 +21,8 @@
 // @match        https://pterclub.com/userdetails.php?id=*
 // @match        https://ptsbao.club/userdetails.php?id=*
 // @match        https://*.btschool.club/userdetails.php?id=*
+// @match        https://*.hd4fans.org/userdetails.php?id=*
+// @match        https://*.eastgame.org/userdetails.php?id=*
 // @icon         https://ourbits.club//favicon.ico
 // @grant        GM_addElement
 // @grant        GM_addStyle
@@ -830,13 +832,89 @@ var config = [
     {
       host: "pt.hd4fans.org",
       abbrev: "beAst", 
-      seedList: "",
-      seedListSize: "",
-      seedingSummary: "",
+      seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
+      seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
+      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedingSummary: "#ka1",
       siteRegex: /[@-]\s?(beAst)/i,
-      seederLevels: [],
-      groups:[],
-      useTitle: false,
+      seederLevels: [
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+      ],
+      groups:[
+        { 
+          groupName: 'beAst',
+          groupRegex : /[@-]\s?(beAst)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },        
+        { 
+          groupName: 'beAstTV',
+          groupRegex : /[@-]\s?(beAstTV)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },        
+
+      ],
+      useTitle: true,
+      torCount: 0,
+      torSize: 0,
+    },
+    {
+      host: "pt.eastgame.org",
+      abbrev: "TLFbits", 
+      seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
+      seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
+      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedingSummary: "#ka1",
+      siteRegex: /[@-]\s?(TLF)/i,
+      seederLevels: [
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+      ],
+      groups:[
+        { 
+          groupName: 'iNT-TLF',
+          groupRegex : /[@. -](iNT-TLF)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },        
+        { 
+          groupName: 'HALFCD-TLF',
+          groupRegex : /[@ .](HALFCD-TLF)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'MiniSD-TLF',
+          groupRegex : /[@ .](MiniSD-TLF)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'MiniHD-TLF',
+          groupRegex : /[@ .](MiniHD-TLF)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'MiniFHD-TLF',
+          groupRegex : /[@ .](MiniFHD-TLF)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'TLF',
+          groupRegex : /[@-]\s?(TLF)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },        
+      ],
+      useTitle: true,
       torCount: 0,
       torSize: 0,
     },
@@ -915,7 +993,7 @@ var config = [
       if (theConfig.useTitle) torName = seedList[i].title;
       else torName = seedList[i].innerText;
   
-      if (theConfig.host == "club.hares.top") {
+      if (theConfig.host in ["club.hares.top", "pt.eastgame.org"]) {
         torSize = sizeStrToBytes(seedListSize[i].innerText);
       }
       else {
