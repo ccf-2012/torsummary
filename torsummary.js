@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.12
+// @version      0.13
 // @license      GPL-3.0 License
 // @description  Count the seeding torrents, support Ace, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool, TLF, beAst
 // @author       ccf2012
@@ -31,7 +31,7 @@
 var config = [
     {
       host: "audiences.me",
-      abbrev: "Ace", 
+      abbrev: "Audiences", 
       seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
@@ -264,6 +264,8 @@ var config = [
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
+      uploadSummary: "#ka ",
+      uploadSize: "#ka > table > tbody > tr > td:nth-child(3)",
       siteRegex: /[@-]\s?(CHD|blucook|HQC|GBT|KAN|OneHD)/i,
       seederLevels: [
         {seederNum: 2, seederLevelCount: 0, seederLevelSize: 0}, 
@@ -1105,7 +1107,145 @@ var config = [
       + '</td></tr></tbody></table>'+summary.innerHTML ;
   
   }
+
+
+  function categoryByTitle(torTitle) {
+    if (torTitle.match(/remux/ig)) {
+      return "remux"
+    }
+    else if (torTitle.match(/web-?dl|web-?rip|hdtv/ig)) {
+      return "webdl"
+    }
+    else if (torTitle.match(/dvdr|dvdrip/ig)) {
+      return "dvdrip"
+    }
+    else if (torTitle.match(/encode|x264|x265/ig)) {
+      return "encode"
+    }
+    else if (torTitle.match(/blu-?ray|uhd|hevc/ig)) {
+      return "Bluray"
+    }
+    else {
+      return "unknow"
+    }
+  }
   
+
+  /** Function that count occurrences of a substring in a string;
+   * @param {String} string               The string
+   * @param {String} subString            The sub string to search for
+   * @param {Boolean} [allowOverlapping]  Optional. (Default:false)
+   *
+   * @author Vitim.us https://gist.github.com/victornpb/7736865
+   * @see Unit Test https://jsfiddle.net/Victornpb/5axuh96u/
+   * @see https://stackoverflow.com/a/7924240/938822
+   */
+  function occurrences(string, subString, allowOverlapping) {
+
+    string += "";
+    subString += "";
+    if (subString.length <= 0) return (string.length + 1);
+
+    var n = 0,
+        pos = 0,
+        step = allowOverlapping ? 1 : subString.length;
+
+    while (true) {
+        pos = string.indexOf(subString, pos);
+        if (pos >= 0) {
+            ++n;
+            pos += step;
+        } else break;
+    }
+    return n;
+  }
+
+  function categoryStr(catStr) {
+    let nRemux = occurrences(catStr, "remux");
+    let nWebdl = occurrences(catStr, "webdl");
+    let nDvdrip = occurrences(catStr, "dvdrip");
+    let nEncode = occurrences(catStr, "encode");
+    let nBluray = occurrences(catStr, "Bluray");
+    let nUnknow = occurrences(catStr, "unknow");
+
+    let tstr = (nRemux ? "Remux: " +nRemux : "") + (nWebdl ? " Webdl: " +nWebdl : "") 
+      + (nDvdrip ? " DVD: " +nDvdrip : "") + (nEncode ? " Encode: " +nEncode : "") 
+      + (nBluray ? " Bluray: " +nBluray : "") + (nUnknow ? " unknow: " +nUnknow : "");
+
+    return tstr;
+  }
+
+  function getUploadList(seedHtml, theConfig) {
+    if (!theConfig.hasOwnProperty("uploadSummary")){
+      return false;
+    }
+
+    var d = new Date();
+    d.setMonth(d.getMonth() + 1);
+    d.setDate(1);
+    d.setHours(0,0,0,0);
+    
+    var MONTH_TOTAL = 5
+    var dataSep = [];
+    var dataCount = [];
+    var dataSize = [];
+    var catStr = [];
+
+    var datep0 = new Date(d)
+    dataSep.push(datep0)
+    dataCount.push(0);
+    dataSize.push(0);
+    catStr.push("")
+    for (let i=0; i<MONTH_TOTAL; ++i){
+      d.setMonth(d.getMonth() - 1);
+      datep0 = new Date(d)
+      dataSep.push(datep0);
+      dataCount.push(0);
+      dataSize.push(0);
+      catStr.push("")
+    }
+
+    // var uploadList = seedHtml.querySelectorAll( theConfig.uploadTime );
+    var torlist = $(seedHtml).find('#ka > table > tbody > tr')
+    for (let i=0; i < torlist.length; ++i){
+      let uptime = $(torlist[i]).find('td:nth-child(4) > span').attr("title")
+      if (uptime) {
+          let dateUpload = new Date(uptime);
+          for (let m=0; m<MONTH_TOTAL; ++m){
+            if (dateUpload >= dataSep[m+1] && dateUpload < dataSep[m]) {
+              let tortile =  $(torlist[i]).find('td:nth-child(2) > a').attr("title");
+              let sizeStr = $(torlist[i]).find('td:nth-child(3)').text();
+              let sizeBytes = sizeStrToBytes(sizeStr);
+              dataSize[m+1] += sizeBytes;
+              catStr[m+1] += (categoryByTitle(tortile))
+              // TORLIST.push(tortile)
+              console.log(tortile);
+              dataCount[m+1]++;
+            }
+          }
+      }
+    }
+    // debugger;
+    console.log("发种数量："+dataCount)
+
+    var uploadSummaryTable = '<table id="up_summary"><tbody><th>分月统计</th><th>发种数量</th><th>类型</th><th>大小</th>';
+    for (let i=0; i<MONTH_TOTAL; i++ )
+    {
+      if (dataCount[i] > 0) {
+        let datestr = dataSep[i].toLocaleString('default', { year:'numeric', month: 'long' });
+        
+        uploadSummaryTable += '<tr><td>'+datestr + '</a></td><td>'
+          + dataCount[i] + '</td><td>' 
+          + categoryStr(catStr[i]) + '</td><td>' 
+          + formatBytes(dataSize[i]) + '</td></tr>';
+      }
+    }
+    uploadSummaryTable += '</tbody></table>';
+      
+    var summary = document.querySelector(theConfig.uploadSummary);
+    summary.innerHTML = uploadSummaryTable + summary.innerHTML ;
+    return dataCount
+  }
   
   (function () {
     "use strict";
@@ -1115,14 +1255,18 @@ var config = [
     } else {
       var intv = setInterval(function() {
         var elems = document.querySelectorAll('#ka1 > table > tbody > tr');
-        if (elems && elems.length <  1){
+        var elemUp = document.querySelectorAll('#ka > table > tbody > tr');
+
+        if (elems && elemUp && elems.length <  1 && elemUp.length <  1) {
               return false;
         }
+
         //when element is found, clear the interval.
         clearInterval(intv);
-  
+        
         var thisConfig = config.find(cc => window.location.host.includes(cc.host));
-        if (thisConfig) getSeedList(document, thisConfig);
+        if (thisConfig && elems.length > 0) getSeedList(document, thisConfig);
+        if (thisConfig && elemUp.length > 0) getUploadList(document, thisConfig);
       }, 1000);
     }
     
