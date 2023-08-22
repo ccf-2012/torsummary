@@ -4,7 +4,7 @@
 
 https://greasyfork.org/zh-CN/scripts/432969
 
-当前支持Ace, PTer, SKY, OB, CHD, Hares, PTH, HDDolby, TJUPT, TTG, HDH，SSD, HDChina，PtSbao
+当前支持Audiences, PTer, SKY, OB, CHD, Hares, PTH, HDDolby, TJUPT, TTG, HDH，SSD, HDChina，PtSbao
 
 tampermonkey油猴中启用脚本后，在上述各站个人信息页面中，点开作种列表，会显示：
 1. 各站官种统计
