@@ -27,6 +27,7 @@
 // @match        https://*.hd4fans.org/userdetails.php?id=*
 // @match        https://*.eastgame.org/userdetails.php?id=*
 // @match        https://hhanclub.top/userdetails.php?id=*
+// @match        https://leaves.red/userdetails.php?id=*
 // @icon         https://ourbits.club//favicon.ico
 // @grant        GM_addElement
 // @grant        GM_addStyle
@@ -663,6 +664,38 @@ var config = [
       torSize: 0,
     },
     {
+      host: "leaves.red",
+      abbrev: "RedLeaves", 
+      seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
+      seedListSize: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(5)",
+      seedingSummary: "#ka1",
+      siteRegex: /[@-]\s?(RL)/i,
+      seederLevels: [
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+      ],
+      groups: [
+        { 
+          groupName: 'RL',
+          groupRegex : /[@-]\s?(RL)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'RL4B',
+          groupRegex : /[@-]\s?(RL4B)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+      ],
+      useTitle: true,
+      torCount: 0,
+      torSize: 0,
+    },    
+    {
       host: "totheglory.im",
       abbrev: "TTG", 
       seedList: "#ka2 > table > tbody > tr > td:nth-child(2) > a",
@@ -1095,7 +1128,76 @@ var parseSeedPage = (html, theConfig, seedColor) => {
   return torlist;
 }
 
-var getNextPage = async (nextLink) => {
+
+
+var rlGetNextPage = async (nextLink) => {
+  // var currentPageEle = $(html).find(SSD_SEED_PAGE).last();
+  var nextPageLink = nextLink;
+  console.log(nextPageLink);
+  // $.get(nextPageLink).done(e => getPageList(e))
+  var nextpage = await $.get(nextPageLink);
+  return nextpage;
+};
+
+var rlHasNextPageLink = (html, RL_PAGE) => {
+  // var currentPageEle = $(html).find(RL_PAGE);
+  // return currentPageEle.next().attr("href") ? true : false;
+
+  var  currentPageEles = $(html).find(RL_PAGE );
+  if (!currentPageEles) return '';
+  var currentPageEle = currentPageEles[0];
+  // var currentPageEle;
+  // if (pageEleList[0].innerText.indexOf('一页') > 0){
+  //   currentPageEle= pageEleList[1];
+  // }
+  // else currentPageEle= pageEleList[0];
+  var link = $(currentPageEle).next().prop("href");
+  return  link ? link : '';
+};
+
+
+var fetchRLSeedPages = async(seedHtml, theConfig) => {
+  RL_PAGE = '#ka1 > p > font:nth-child(4)'
+  var fullLinkEle = $(seedHtml).find(RL_PAGE);
+  if (fullLinkEle.length > 0){
+
+    for (const x of theConfig.groups) {
+      x.groupCount = 0;
+      x.groupSize = 0;
+    }
+    totalTorCount = 0;
+    totalTorSize = 0;
+  
+    firstLink = fullLinkEle[0].href;
+    var intpage = 1;
+    var bNext = true;
+    var page = seedHtml;
+    // var page  = await $.get(firstLink);
+    // console.log(firstLink);
+    // var nextlink = firstLink;
+    var count = 0;
+    while ( bNext) {
+      debugger;
+      parseOneSeedPage(page, theConfig);
+      nextlink = rlHasNextPageLink(page, RL_PAGE);
+      count++;
+      if ( nextlink ) {
+        if (count % 8 == 0) await sleep(3000);
+        page = await rlGetNextPage(nextlink);
+        intpage += 1;
+      }
+    }
+    showSumary(totalTorCount, totalTorSize, theConfig)
+    return true;
+  }
+  else return false;
+}
+ 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+var ssdGetNextPage = async (nextLink) => {
   // var currentPageEle = $(html).find(SSD_SEED_PAGE).last();
   var nextPageLink = SSD_SEED_URL + nextLink;
   console.log(nextPageLink);
@@ -1104,8 +1206,8 @@ var getNextPage = async (nextLink) => {
   return nextpage;
 };
 
-var hasNextPage = (html) => {
-  var  pageEleList = $(html).find(SSD_SEED_PAGE);
+var ssdHasNextPage = (html, pageEle) => {
+  var  pageEleList = $(html).find(pageEle );
   if (!pageEleList) return '';
   var currentPageEle;
   if (pageEleList[0].innerText.indexOf('一页') > 0){
@@ -1116,28 +1218,6 @@ var hasNextPage = (html) => {
   return  link ? link : '';
 };
 
-var getPageList = async (firstLink, theConfig) => {
-  var intpage = 1;
-  var page  = await $.get(firstLink);
-  console.log(firstLink);
-  var nextlink = firstLink;
-  var count = 0;
-  while ( nextlink) {
-    var r =  parseSeedPage(page, theConfig, false);
-    nextlink = hasNextPage(page);
-    count++;
-    if ( nextlink ) {
-      if (count % 8 == 0) await sleep(3000);
-      page = await getNextPage(nextlink);
-      intpage += 1;
-    }
-  }
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 var hasSSDFullList = async (seedHtml, theConfig) => {
   var fullLinkEle = $(seedHtml).find('#ka1 > a:contains("完整记录")');
   if (fullLinkEle.length > 0){
@@ -1145,17 +1225,37 @@ var hasSSDFullList = async (seedHtml, theConfig) => {
       x.groupCount = 0;
       x.groupSize = 0;
     }
-    theConfig.torCount = 0;
-    theConfig.torSize = 0;
+    SSD_totalTorCount = 0;
+    SSD_totalTorSize = 0;
+    // theConfig.torCount = 0;
+    // theConfig.torSize = 0;
+  
+    firstLink = fullLinkEle[0].href;
+    var intpage = 1;
+    var page  = await $.get(firstLink);
+    // console.log(firstLink);
+    var nextlink = firstLink;
+    var count = 0;
+    while ( nextlink) {
+      var r =  parseSeedPage(page, theConfig, false);
+      nextlink = ssdHasNextPage(page, SSD_SEED_PAGE);
+      count++;
+      if ( nextlink ) {
+        if (count % 8 == 0) await sleep(3000);
+        page = await ssdGetNextPage(nextlink);
+        intpage += 1;
+      }
+    }
   
     // var firstlink = 'https://springsunday.net/torrents.php?team=1';
     // await getPageList(firstlink, theConfig);        
-    await getPageList(fullLinkEle[0].href, theConfig);
+    // await ssdGetPageList(fullLinkEle[0].href, theConfig);
     showSumary(SSD_totalTorCount, SSD_totalTorSize, theConfig)
     return true;
   }
   else return false;
 }
+
 
 function colorSeed(seedHtml, theConfig) {
   var seedList = seedHtml.querySelectorAll( theConfig.seedList );
@@ -1185,6 +1285,85 @@ function colorSeed(seedHtml, theConfig) {
     }
   }
 }
+
+var totalTorCount = 0;
+var totalTorSize = 0;
+
+function parseOneSeedPage(seedHtml, theConfig){
+  var seedList = seedHtml.querySelectorAll( theConfig.seedList );
+  var seedListSize = seedHtml.querySelectorAll( theConfig.seedListSize );
+  var seedListSeederNum = seedHtml.querySelectorAll( theConfig.seedListSeederCount );
+
+
+  for (var i = 0; i < seedList.length; i++) {
+    var torName;
+    var torSize;
+    var torSeederNum;
+    var foundGroup;
+    if (theConfig.useTitle) torName = seedList[i].title;
+    else torName = seedList[i].innerText;
+
+    if (theConfig.host in ["club.hares.top", "pt.eastgame.org"]) {
+      torSize = sizeStrToBytes(seedListSize[i].innerText);
+    }
+    else {
+      torSize = sizeStrToBytes(seedListSize[i + 1].innerText);
+    }
+    totalTorCount ++;
+    totalTorSize += torSize;
+
+    var foundConfig = config.find(cc => torName.match(cc.siteRegex))
+    // for pterclub, all game is counted as internal torrent
+    var isPTerGameCat = false;
+    if (theConfig.host == "pterclub.com") {
+      isPTerGameCat = seedList[i].href.match(/game.php\b/i);
+      if (isPTerGameCat) {
+        foundConfig = theConfig;
+      }
+    }
+
+    if (foundConfig){
+      foundConfig.torCount ++;
+      if (foundConfig == theConfig) {
+        if (isPTerGameCat) {
+          foundGroup = theConfig.groups.find(gg => (gg.groupName == '游戏'));
+        } else {
+          foundGroup = theConfig.groups.find(gg => torName.match(gg.groupRegex));
+        }
+        if (foundGroup){
+          foundGroup.groupCount++;
+          foundGroup.groupSize += torSize;
+        }
+        // cat the seeder level
+        torSeederNum = parseFloat(seedListSeederNum[i+1].innerText);
+        if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-2].seederNum) {
+          seedList[i].parentNode.style = "background-color: #ef6216"; 
+        }
+        else if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-1].seederNum) {
+          seedList[i].parentNode.style = "background-color: #f9f"; 
+        }
+        else {
+          seedList[i].parentNode.style = "background-color: lightgreen;";
+        }
+
+        for (var sl=0; sl < theConfig.seederLevels.length; sl++) {
+          if (torSeederNum < theConfig.seederLevels[sl].seederNum) {
+            theConfig.seederLevels[sl].seederLevelCount++;
+            theConfig.seederLevels[sl].seederLevelSize += torSize;
+            break;
+          }
+        }
+
+      }
+      foundConfig.torSize += torSize;
+    } else {
+      config[OTHERS_INDEX].torCount ++;
+      config[OTHERS_INDEX].torSize += torSize;
+    }
+  }
+}
+
+
 async function getSeedList(seedHtml, theConfig) {
     var sumaryShown = false;
     if (theConfig.host == "springsunday.net"){
@@ -1194,80 +1373,19 @@ async function getSeedList(seedHtml, theConfig) {
         return;
       }
     }
-
-    var seedList = seedHtml.querySelectorAll( theConfig.seedList );
-    var seedListSize = seedHtml.querySelectorAll( theConfig.seedListSize );
-    var seedListSeederNum = seedHtml.querySelectorAll( theConfig.seedListSeederCount );
-
-    var totalTorCount = 0;
-    var totalTorSize = 0;
-  
-    for (var i = 0; i < seedList.length; i++) {
-      var torName;
-      var torSize;
-      var torSeederNum;
-      var foundGroup;
-      if (theConfig.useTitle) torName = seedList[i].title;
-      else torName = seedList[i].innerText;
-  
-      if (theConfig.host in ["club.hares.top", "pt.eastgame.org"]) {
-        torSize = sizeStrToBytes(seedListSize[i].innerText);
-      }
-      else {
-        torSize = sizeStrToBytes(seedListSize[i + 1].innerText);
-      }
-      totalTorCount ++;
-      totalTorSize += torSize;
-  
-      var foundConfig = config.find(cc => torName.match(cc.siteRegex))
-      // for pterclub, all game is counted as internal torrent
-      var isPTerGameCat = false;
-      if (theConfig.host == "pterclub.com") {
-        isPTerGameCat = seedList[i].href.match(/game.php\b/i);
-        if (isPTerGameCat) {
-          foundConfig = theConfig;
-        }
-      }
-  
-      if (foundConfig){
-        foundConfig.torCount ++;
-        if (foundConfig == theConfig) {
-          if (isPTerGameCat) {
-            foundGroup = theConfig.groups.find(gg => (gg.groupName == '游戏'));
-          } else {
-            foundGroup = theConfig.groups.find(gg => torName.match(gg.groupRegex));
-          }
-          if (foundGroup){
-            foundGroup.groupCount++;
-            foundGroup.groupSize += torSize;
-          }
-          // cat the seeder level
-          torSeederNum = parseFloat(seedListSeederNum[i+1].innerText);
-          if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-2].seederNum) {
-            seedList[i].parentNode.style = "background-color: #ef6216"; 
-          }
-          else if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-1].seederNum) {
-            seedList[i].parentNode.style = "background-color: #f9f"; 
-          }
-          else {
-            seedList[i].parentNode.style = "background-color: lightgreen;";
-          }
-  
-          for (var sl=0; sl < theConfig.seederLevels.length; sl++) {
-            if (torSeederNum < theConfig.seederLevels[sl].seederNum) {
-              theConfig.seederLevels[sl].seederLevelCount++;
-              theConfig.seederLevels[sl].seederLevelSize += torSize;
-              break;
-            }
-          }
-  
-        }
-        foundConfig.torSize += torSize;
-      } else {
-        config[OTHERS_INDEX].torCount ++;
-        config[OTHERS_INDEX].torSize += torSize;
+    else if (theConfig.host == "leaves.red"){
+      sumaryShown = await fetchRLSeedPages(seedHtml, theConfig)
+      if (sumaryShown) {
+        colorSeed(seedHtml, theConfig)
+        return;
       }
     }
+    totalTorCount = 0;
+    totalTorSize = 0;
+  
+    parseOneSeedPage(seedHtml, theConfig)
+    colorSeed(seedHtml, theConfig)
+
     if (!sumaryShown){
       showSumary(totalTorCount, totalTorSize, theConfig)
     }
