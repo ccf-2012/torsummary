@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.16.5
+// @version      0.16.6
 // @license      GPL-3.0 License
 // @description  Count the seeding torrents, support Audiences, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool, TLF, beAst
 // @author       ccf2012
@@ -22,6 +22,7 @@
 // @match        https://springsunday.net/userdetails.php?id=*
 // @match        https://springsunday.net/torrents.php?*&my=seeding&*
 // @match        https://pterclub.com/userdetails.php?id=*
+// @match        https://pterclub.com/getusertorrentlist.php?*&type=seeding*
 // @match        https://ptsbao.club/userdetails.php?id=*
 // @match        https://*.btschool.club/userdetails.php?id=*
 // @match        https://*.hd4fans.org/userdetails.php?id=*
@@ -1061,6 +1062,50 @@ var config = [
     return size;
   }
 
+  var PTER_SEED_PAGE = '#outer > p.np-pager > font.gray';
+  var PTER_SEED_URL = 'https://pterclub.com/getusertorrentlist.php';
+  var PTER_SEED_LIST = '#outer > table > tbody > tr';
+  var PTER_TOR_ELE = 'td:nth-child(2) > a';
+  var PTER_TOR_SIZE = 'td:nth-child(4)';
+  var PTER_TOR_SEEDNUM = 'td:nth-child(5)'
+  
+  var fetchPTerSeedPages = async (seedHtml, theConfig) => {
+    var fullLinkEle = $(seedHtml).find('#ka1 > a:contains("查看全部记录")');
+    if (fullLinkEle.length > 0){
+      for (const x of theConfig.groups) {
+        x.groupCount = 0;
+        x.groupSize = 0;
+      }
+      SSD_totalTorCount = 0;
+      SSD_totalTorSize = 0;
+      // theConfig.torCount = 0;
+      // theConfig.torSize = 0;
+    
+      var firstLink = fullLinkEle[0].href;
+      var intpage = 1;
+      var page  = await $.get(firstLink);
+      // console.log(firstLink);
+      var nextlink = firstLink;
+      var count = 0;
+      while ( nextlink) {
+        var r =  parseSeedPage(page, theConfig, false, PTER_SEED_LIST, PTER_TOR_ELE, PTER_TOR_SIZE, PTER_TOR_SEEDNUM);
+        nextlink = ssdHasNextPage(page, PTER_SEED_PAGE);
+        count++;
+        if ( nextlink ) {
+          if (count % 8 == 0) await sleep(3000);
+          page = await ssdGetNextPage(PTER_SEED_URL + nextlink);
+          intpage += 1;
+        }
+      }
+    
+      // var firstlink = 'https://springsunday.net/torrents.php?team=1';
+      // await getPageList(firstlink, theConfig);        
+      // await ssdGetPageList(fullLinkEle[0].href, theConfig);
+      showSumary(SSD_totalTorCount, SSD_totalTorSize, theConfig)
+      return true;
+    }
+    else return false;
+  }
 
 /// SSD seed pages 
 var SSD_SEED_PAGE = '#outer > table > tbody > tr > td > p > font.gray';
@@ -1072,8 +1117,8 @@ var SSD_TOR_SEEDNUM = 'td:nth-child(6)'
 var SSD_totalTorCount = 0;
 var SSD_totalTorSize = 0;
 
-var parseSeedPage = (html, theConfig, seedColor) => {
-  var torlist = $(html).find(SSD_SEED_LIST)
+var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTorSize, eleTorSeedNum) => {
+  var torlist = $(html).find(eleSeedList)
   for (var i = 0; i < torlist.length; i++){
     var torName;
     var torSize;
@@ -1081,11 +1126,11 @@ var parseSeedPage = (html, theConfig, seedColor) => {
     var foundGroup;
 
     const element = torlist[i];
-    var item = $(element).find(SSD_TOR_ELE);
+    var item = $(element).find(eleTorItem);
     if (theConfig.useTitle) torName = item.attr('title');
     else torName = item.text();
     if (!torName) continue;
-    torSize = sizeStrToBytes($(element).find(SSD_TOR_SIZE).text());
+    torSize = sizeStrToBytes($(element).find(eleTorSize).text());
     SSD_totalTorCount ++;
     SSD_totalTorSize += torSize;
     var foundConfig = config.find(cc => torName.match(cc.siteRegex))
@@ -1097,7 +1142,7 @@ var parseSeedPage = (html, theConfig, seedColor) => {
           foundGroup.groupCount++;
           foundGroup.groupSize += torSize;
         }
-        torSeederNum = parseFloat($(element).find(SSD_TOR_SEEDNUM).text());
+        torSeederNum = parseFloat($(element).find(eleTorSeedNum).text());
         if (seedColor){
           if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-2].seederNum) {
             $(element).css("background-color", "#ef6216"); 
@@ -1157,7 +1202,7 @@ var rlHasNextPageLink = (html, RL_PAGE) => {
 
 
 var fetchRLSeedPages = async(seedHtml, theConfig) => {
-  RL_PAGE = '#ka1 > p > font:nth-child(4)'
+  var RL_PAGE = '#ka1 > p > font:nth-child(4)'
   var fullLinkEle = $(seedHtml).find(RL_PAGE);
   if (fullLinkEle.length > 0){
 
@@ -1168,7 +1213,7 @@ var fetchRLSeedPages = async(seedHtml, theConfig) => {
     totalTorCount = 0;
     totalTorSize = 0;
   
-    firstLink = fullLinkEle[0].href;
+    var firstLink = fullLinkEle[0].href;
     var intpage = 1;
     var bNext = true;
     var page = seedHtml;
@@ -1179,7 +1224,7 @@ var fetchRLSeedPages = async(seedHtml, theConfig) => {
     while ( bNext) {
       debugger;
       parseOneSeedPage(page, theConfig);
-      nextlink = rlHasNextPageLink(page, RL_PAGE);
+      var nextlink = rlHasNextPageLink(page, RL_PAGE);
       count++;
       if ( nextlink ) {
         if (count % 8 == 0) await sleep(3000);
@@ -1199,7 +1244,7 @@ function sleep(ms) {
 
 var ssdGetNextPage = async (nextLink) => {
   // var currentPageEle = $(html).find(SSD_SEED_PAGE).last();
-  var nextPageLink = SSD_SEED_URL + nextLink;
+  var nextPageLink = nextLink
   console.log(nextPageLink);
   // $.get(nextPageLink).done(e => getPageList(e))
   var nextpage = await $.get(nextPageLink);
@@ -1230,19 +1275,19 @@ var hasSSDFullList = async (seedHtml, theConfig) => {
     // theConfig.torCount = 0;
     // theConfig.torSize = 0;
   
-    firstLink = fullLinkEle[0].href;
+    var firstLink = fullLinkEle[0].href;
     var intpage = 1;
     var page  = await $.get(firstLink);
     // console.log(firstLink);
     var nextlink = firstLink;
     var count = 0;
     while ( nextlink) {
-      var r =  parseSeedPage(page, theConfig, false);
+      var r =  parseSeedPage(page, theConfig, false, SSD_SEED_LIST, SSD_TOR_ELE, SSD_TOR_SIZE, SSD_TOR_SEEDNUM);
       nextlink = ssdHasNextPage(page, SSD_SEED_PAGE);
       count++;
       if ( nextlink ) {
         if (count % 8 == 0) await sleep(3000);
-        page = await ssdGetNextPage(nextlink);
+        page = await ssdGetNextPage(SSD_SEED_URL + nextlink);
         intpage += 1;
       }
     }
@@ -1368,6 +1413,13 @@ async function getSeedList(seedHtml, theConfig) {
     var sumaryShown = false;
     if (theConfig.host == "springsunday.net"){
       sumaryShown = await hasSSDFullList(seedHtml, theConfig)
+      if (sumaryShown) {
+        colorSeed(seedHtml, theConfig)
+        return;
+      }
+    }
+    else if (theConfig.host == "pterclub.com"){
+      sumaryShown = await fetchPTerSeedPages(seedHtml, theConfig)
       if (sumaryShown) {
         colorSeed(seedHtml, theConfig)
         return;
@@ -1594,7 +1646,12 @@ async function getSeedList(seedHtml, theConfig) {
   
     if (window.location.host == "springsunday.net" && window.location.pathname.indexOf("torrents.php") > 0 ){
       var ssdconfig = config.find(cc => window.location.host.includes(cc.host));
-      parseSeedPage(document, ssdconfig, true);
+      parseSeedPage(document, ssdconfig, true, SSD_SEED_LIST, SSD_TOR_ELE, SSD_TOR_SIZE, SSD_TOR_SEEDNUM);
+      return;
+    }
+    if (window.location.host == "pterclub.com" && window.location.pathname.indexOf("getusertorrentlist.php") > 0 ){
+      var pterconfig = config.find(cc => window.location.host.includes(cc.host));
+      parseSeedPage(document, pterconfig, true, PTER_SEED_LIST, PTER_TOR_ELE, PTER_TOR_SIZE, PTER_TOR_SEEDNUM);
       return;
     }
     if (window.location.host == "totheglory.im") {
