@@ -1030,7 +1030,7 @@ var config = [
 
 
 /// SSD seed pages 
-var SSD_SEED_PAGE = '#outer > table > tbody > tr > td > p > font.gray';
+var SSD_SEED_PAGE = '#outer > div > p > font.gray';
 var SSD_SEED_LIST = 'table.torrents > tbody > tr';
 var SSD_SEED_URL = 'https://springsunday.net/torrents.php';
 var SSD_TOR_ELE = 'div.torrent-title > a';
