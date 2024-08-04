@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.16.6
+// @version      0.16.7
 // @license      GPL-3.0 License
 // @description  Count the seeding torrents, support Audiences, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool, TLF, beAst
 // @author       ccf2012
@@ -1224,10 +1224,12 @@ var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTor
           foundGroup.groupCount++;
           foundGroup.groupSize += torSize;
         }
-        foundGroup = theConfig.self_groups.find(gg => torName.match(gg.groupRegex));
-        if (foundGroup){
-          foundGroup.groupCount++;
-          foundGroup.groupSize+= torSize;
+        if (theConfig.abbrev === 'SSD') {
+            foundGroup = theConfig.self_groups.find(gg => torName.match(gg.groupRegex));
+            if (foundGroup){
+                foundGroup.groupCount++;
+                foundGroup.groupSize+= torSize;
+            }
         }
         torSeederNum = parseFloat($(element).find(eleTorSeedNum).text());
         if (seedColor){
@@ -1297,7 +1299,7 @@ var fetchRLSeedPages = async(seedHtml, theConfig) => {
     }
     totalTorCount = 0;
     totalTorSize = 0;
- 
+
     var firstLink = fullLinkEle[0].href;
     var intpage = 1;
     var bNext = true;
@@ -1322,7 +1324,7 @@ var fetchRLSeedPages = async(seedHtml, theConfig) => {
   }
   else return false;
 }
- 
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -1359,7 +1361,7 @@ var hasSSDFullList = async (seedHtml, theConfig) => {
     SSD_totalTorSize = 0;
     // theConfig.torCount = 0;
     // theConfig.torSize = 0;
-  
+
     var firstLink = fullLinkEle[0].href;
     var intpage = 1;
     var page  = await $.get(firstLink);
@@ -1376,9 +1378,9 @@ var hasSSDFullList = async (seedHtml, theConfig) => {
         intpage += 1;
       }
     }
-  
+
     // var firstlink = 'https://springsunday.net/torrents.php?team=1';
-    // await getPageList(firstlink, theConfig);        
+    // await getPageList(firstlink, theConfig);
     // await ssdGetPageList(fullLinkEle[0].href, theConfig);
     showSumary(SSD_totalTorCount, SSD_totalTorSize, theConfig)
     return true;
@@ -1443,6 +1445,7 @@ function parseOneSeedPage(seedHtml, theConfig){
     totalTorSize += torSize;
 
     var foundConfig = config.find(cc => torName.match(cc.siteRegex))
+
     // for pterclub, all game is counted as internal torrent
     var isPTerGameCat = false;
     if (theConfig.host == "pterclub.com") {
@@ -1463,6 +1466,13 @@ function parseOneSeedPage(seedHtml, theConfig){
         if (foundGroup){
           foundGroup.groupCount++;
           foundGroup.groupSize += torSize;
+        }
+        if (theConfig.abbrev === 'SSD') {
+            foundGroup = theConfig.self_groups.find(gg => torName.match(gg.groupRegex));
+            if (foundGroup) {
+                foundGroup.groupCount++;
+                foundGroup.groupSize += torSize;
+            }
         }
         // cat the seeder level
         torSeederNum = parseFloat(seedListSeederNum[i+1].innerText);
@@ -1518,7 +1528,7 @@ async function getSeedList(seedHtml, theConfig) {
     }
     totalTorCount = 0;
     totalTorSize = 0;
-  
+
     parseOneSeedPage(seedHtml, theConfig)
     colorSeed(seedHtml, theConfig)
 
@@ -1531,13 +1541,12 @@ async function getSeedList(seedHtml, theConfig) {
   {
     GM_addStyle("#ot_block {font-weight: bold;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}");
     GM_addStyle("#ot_block td, #ot_summary th{vertical-align: top;border: none;padding: 18px;}");
-  
     GM_addStyle("#ot_summary {font-weight: normal;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}");
     GM_addStyle("#ot_summary tr:nth-child(even){background-color: #f2f2f2;}");
     GM_addStyle("#ot_summary tr:hover {background-color: #ddd;}");
     GM_addStyle("#ot_summary td, #ot_summary th{border: 1px solid #ddd;padding: 4px;}");
     GM_addStyle("#ot_summary th{padding-top: 6px;padding-bottom: 6px;text-align: left;color: white;background-color: #2f4879;}");
-  
+
     var groupSumary = '<table id="ot_summary"><tbody><th>官组</th><th>数量</th><th>大小</th>';
     for (var i=0; i<theConfig.groups.length; i++){
       if (theConfig.groups[i].groupCount >0){
