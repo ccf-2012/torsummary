@@ -481,6 +481,14 @@ var config = [
           groupSize: 0,
         },
         {
+          groupName: 'GTR',
+          groupRegex: /[@-]\s?(GTR)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+      ],
+      self_groups: [
+        {
           groupName: 'XY',
           groupRegex: /[@-]\s?(XY)/i,
           groupCount: 0,
@@ -523,12 +531,6 @@ var config = [
           groupSize: 0,
         },
         {
-          groupName: 'GTR',
-          groupRegex: /[@-]\s?(GTR)\b/i,
-          groupCount: 0,
-          groupSize: 0,
-        },
-        {
           groupName: 'Lislander',
           groupRegex : /[@-]\s?(Lislander)\b/i,
           groupCount: 0,
@@ -550,6 +552,8 @@ var config = [
       useTitle: true,
       torCount: 0,
       torSize: 0,
+      selfTorCount: 0,
+      selfTorSize: 0,
     },
     {
       host: "hdhome.org",
@@ -1172,9 +1176,9 @@ var config = [
           intpage += 1;
         }
       }
-    
+
       // var firstlink = 'https://springsunday.net/torrents.php?team=1';
-      // await getPageList(firstlink, theConfig);        
+      // await getPageList(firstlink, theConfig);
       // await ssdGetPageList(fullLinkEle[0].href, theConfig);
       showSumary(SSD_totalTorCount, SSD_totalTorSize, theConfig)
       return true;
@@ -1183,7 +1187,7 @@ var config = [
   }
 
 /// SSD seed pages 
-var SSD_SEED_PAGE = '#outer > div > p > font.gray' //'#outer > table > tbody > tr > td > p > font.gray';
+var SSD_SEED_PAGE = '#outer > div > p > font.gray';
 var SSD_SEED_LIST = 'table.torrents > tbody > tr';
 var SSD_SEED_URL = 'https://springsunday.net/torrents.php';
 var SSD_TOR_ELE = 'div.torrent-title > a';
@@ -1191,6 +1195,8 @@ var SSD_TOR_SIZE = 'td:nth-child(5)';
 var SSD_TOR_SEEDNUM = 'td:nth-child(6)'
 var SSD_totalTorCount = 0;
 var SSD_totalTorSize = 0;
+var SSD_selfGroupCount = 0;
+var SSD_selfGroupSize = 0;
 
 var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTorSize, eleTorSeedNum) => {
   var torlist = $(html).find(eleSeedList)
@@ -1208,7 +1214,8 @@ var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTor
     torSize = sizeStrToBytes($(element).find(eleTorSize).text());
     SSD_totalTorCount ++;
     SSD_totalTorSize += torSize;
-    var foundConfig = config.find(cc => torName.match(cc.siteRegex))
+    var foundConfig = config.find(cc => torName.match(cc.siteRegex)), foundSelfGroup;
+
     if (foundConfig){
       foundConfig.torCount ++;
       if (foundConfig == theConfig) {
@@ -1216,6 +1223,11 @@ var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTor
         if (foundGroup){
           foundGroup.groupCount++;
           foundGroup.groupSize += torSize;
+        }
+        foundGroup = theConfig.self_groups.find(gg => torName.match(gg.groupRegex));
+        if (foundGroup){
+          foundGroup.groupCount++;
+          foundGroup.groupSize+= torSize;
         }
         torSeederNum = parseFloat($(element).find(eleTorSeedNum).text());
         if (seedColor){
@@ -1248,8 +1260,6 @@ var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTor
   return torlist;
 }
 
-
-
 var rlGetNextPage = async (nextLink) => {
   // var currentPageEle = $(html).find(SSD_SEED_PAGE).last();
   var nextPageLink = nextLink;
@@ -1263,7 +1273,7 @@ var rlHasNextPageLink = (html, RL_PAGE) => {
   // var currentPageEle = $(html).find(RL_PAGE);
   // return currentPageEle.next().attr("href") ? true : false;
 
-  var  currentPageEles = $(html).find(RL_PAGE );
+  var currentPageEles = $(html).find(RL_PAGE );
   if (!currentPageEles) return '';
   var currentPageEle = currentPageEles[0];
   // var currentPageEle;
@@ -1272,7 +1282,7 @@ var rlHasNextPageLink = (html, RL_PAGE) => {
   // }
   // else currentPageEle= pageEleList[0];
   var link = $(currentPageEle).next().prop("href");
-  return  link ? link : '';
+  return link ? link : '';
 };
 
 
@@ -1287,7 +1297,7 @@ var fetchRLSeedPages = async(seedHtml, theConfig) => {
     }
     totalTorCount = 0;
     totalTorSize = 0;
-  
+ 
     var firstLink = fullLinkEle[0].href;
     var intpage = 1;
     var bNext = true;
@@ -1535,7 +1545,18 @@ async function getSeedList(seedHtml, theConfig) {
       }
     }
     groupSumary += '</tbody></table>';
-  
+
+    let selfGroupSumary = '';
+    if (theConfig.abbrev === 'SSD'){
+        selfGroupSumary = '<table id="ot_summary"><tbody><th>制作组</th><th>数量</th><th>大小</th>';
+        for (i=0; i<theConfig.self_groups.length; i++){
+            if (theConfig.self_groups[i].groupCount >0){
+                selfGroupSumary += '<tr><td>'+theConfig.self_groups[i].groupName+'</td><td>'+theConfig.self_groups[i].groupCount+'</td><td>' +formatBytes(theConfig.self_groups[i].groupSize)+'</td></tr>';
+            }
+        }
+        selfGroupSumary += '</tbody></table>';
+    }
+
     var seederLevelSumary = '';
     if (theConfig.seederLevels.length > 0) {
       seederLevelSumary = '<table id="ot_summary"><tbody><th>做种人数</th><th>数量</th><th>大小</th>';
@@ -1544,9 +1565,9 @@ async function getSeedList(seedHtml, theConfig) {
           + theConfig.seederLevels[i].seederLevelCount+'</td><td>'
           + formatBytes(theConfig.seederLevels[i].seederLevelSize)+'</td></tr>';
       }
-      seederLevelSumary += '</tbody></table>';      
+      seederLevelSumary += '</tbody></table>';
     }
-  
+
     var sitesSumary = '<table id="ot_summary"><tbody><th>各站官种</th><th>数量</th><th>大小</th>';
     for (i=0; i<config.length; i++ )
     {
@@ -1557,17 +1578,22 @@ async function getSeedList(seedHtml, theConfig) {
       }
     }
     sitesSumary += '</tbody></table>';
-  
-  
+
     var summary = document.querySelector(theConfig.seedingSummary);
-    summary.innerHTML = '<table id="ot_block"><tbody><tr><td>'
-      + '做种总数：' + totalTorCount + ' 总大小： '+ formatBytes(totalTorSize) + '<br>' 
-      + sitesSumary + '</td><td>'
-      + '<div>本站官种数量：' + theConfig.torCount + ' 官种大小： '+ formatBytes(theConfig.torSize) + '<br>' 
-      + groupSumary 
-      + '</div><div><p>' + seederLevelSumary +'</div>'
-      + '</td></tr></tbody></table>'+summary.innerHTML ;
-  
+    let inner = '<table id="ot_block"><tbody><tr><td>';
+    inner += '做种总数：' + totalTorCount + ' 总大小： '+ formatBytes(totalTorSize) + '<br>' + sitesSumary + '</td>';
+
+    if (theConfig.abbrev === 'SSD'){
+        inner += '<td><div>本站官种/制作组种数量：' + theConfig.torCount + ' 官种/制作组种大小： '+ formatBytes(theConfig.torSize) + '<br>' + groupSumary + '</div>'
+        inner += '<div>' + selfGroupSumary + '</div>'
+    } else {
+        inner += '<td><div>本站官种数量：' + theConfig.torCount + ' 官种大小： '+ formatBytes(theConfig.torSize) + '<br>' + groupSumary + '</div>'
+    }
+
+    inner += '<div><p>' + seederLevelSumary +'</div>'
+    inner += '</td></tr></tbody></table>'+summary.innerHTML ;
+
+    summary.innerHTML = inner;
   }
 
 
