@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.16.5
+// @version      0.16.7
 // @license      GPL-3.0 License
 // @description  Count the seeding torrents, support Audiences, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool, TLF, beAst
 // @author       ccf2012
@@ -22,14 +22,18 @@
 // @match        https://springsunday.net/userdetails.php?id=*
 // @match        https://springsunday.net/torrents.php?*&my=seeding&*
 // @match        https://pterclub.com/userdetails.php?id=*
+// @match        https://pterclub.com/getusertorrentlist.php?*&type=seeding*
 // @match        https://ptsbao.club/userdetails.php?id=*
 // @match        https://*.btschool.club/userdetails.php?id=*
 // @match        https://*.hd4fans.org/userdetails.php?id=*
 // @match        https://*.eastgame.org/userdetails.php?id=*
 // @match        https://hhanclub.top/userdetails.php?id=*
+// @match        https://leaves.red/userdetails.php?id=*
 // @icon         https://ourbits.club//favicon.ico
 // @grant        GM_addElement
 // @grant        GM_addStyle
+// @downloadURL https://update.greasyfork.org/scripts/432969/%E5%AE%98%E7%A7%8D%E4%BF%9D%E7%A7%8D%E7%BB%9F%E8%AE%A1.user.js
+// @updateURL https://update.greasyfork.org/scripts/432969/%E5%AE%98%E7%A7%8D%E4%BF%9D%E7%A7%8D%E7%BB%9F%E8%AE%A1.meta.js
 // ==/UserScript==
 
 var config = [
@@ -442,13 +446,14 @@ var config = [
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
-      siteRegex: /[@-]\s?(CMCT)/i,
+      siteRegex: /[@-]\s?(CMCT|Oldboys|XY|iFree|RO|CatEDU|7³ACG|Anonymous|Telesto|GTR|Lislander|Crazyleikm|GrassTV)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
-        {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0}
+        {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 9999, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
         { 
@@ -468,11 +473,87 @@ var config = [
           groupRegex: /[@-]\s?(CMCTA)\b/i,
           groupCount: 0,
           groupSize: 0,
-        }
+        },
+        {
+          groupName: 'Oldboys',
+          groupRegex : /[@-]\s?(Oldboys)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'GTR',
+          groupRegex: /[@-]\s?(GTR)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+      ],
+      self_groups: [
+        {
+          groupName: 'XY',
+          groupRegex: /[@-]\s?(XY)/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'iFree',
+          groupRegex: /[@-]\s?(iFree)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'RO',
+          groupRegex : /[@-]\s?(RO)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'CatEDU',
+          groupRegex: /[@-]\s?(CatEDU)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: '7³ACG',
+          groupRegex: /[@-]\s?(7³ACG)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'Anonymous',
+          groupRegex : /[@-]\s?(Anonymous)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'Telesto',
+          groupRegex: /[@-]\s?(Telesto)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'Lislander',
+          groupRegex : /[@-]\s?(Lislander)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'Crazyleikm',
+          groupRegex: /[@-]\s?(Crazyleikm)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        {
+          groupName: 'GrassTV',
+          groupRegex: /[@-]\s?(GrassTV)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
       ],
       useTitle: true,
       torCount: 0,
       torSize: 0,
+      selfTorCount: 0,
+      selfTorSize: 0,
     },
     {
       host: "hdhome.org",
@@ -662,6 +743,38 @@ var config = [
       torCount: 0,
       torSize: 0,
     },
+    {
+      host: "leaves.red",
+      abbrev: "RedLeaves", 
+      seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
+      seedListSize: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(5)",
+      seedingSummary: "#ka1",
+      siteRegex: /[@-]\s?(RL)/i,
+      seederLevels: [
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
+        {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
+      ],
+      groups: [
+        { 
+          groupName: 'RL',
+          groupRegex : /[@-]\s?(RL)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+        { 
+          groupName: 'RL4B',
+          groupRegex : /[@-]\s?(RL4B)\b/i,
+          groupCount: 0,
+          groupSize: 0,
+        },
+      ],
+      useTitle: true,
+      torCount: 0,
+      torSize: 0,
+    },    
     {
       host: "totheglory.im",
       abbrev: "TTG", 
@@ -1028,6 +1141,50 @@ var config = [
     return size;
   }
 
+  var PTER_SEED_PAGE = '#outer > p.np-pager > font.gray';
+  var PTER_SEED_URL = 'https://pterclub.com/getusertorrentlist.php';
+  var PTER_SEED_LIST = '#outer > table > tbody > tr';
+  var PTER_TOR_ELE = 'td:nth-child(2) > a';
+  var PTER_TOR_SIZE = 'td:nth-child(4)';
+  var PTER_TOR_SEEDNUM = 'td:nth-child(5)'
+  
+  var fetchPTerSeedPages = async (seedHtml, theConfig) => {
+    var fullLinkEle = $(seedHtml).find('#ka1 > a:contains("查看全部记录")');
+    if (fullLinkEle.length > 0){
+      for (const x of theConfig.groups) {
+        x.groupCount = 0;
+        x.groupSize = 0;
+      }
+      SSD_totalTorCount = 0;
+      SSD_totalTorSize = 0;
+      // theConfig.torCount = 0;
+      // theConfig.torSize = 0;
+    
+      var firstLink = fullLinkEle[0].href;
+      var intpage = 1;
+      var page  = await $.get(firstLink);
+      // console.log(firstLink);
+      var nextlink = firstLink;
+      var count = 0;
+      while ( nextlink) {
+        var r =  parseSeedPage(page, theConfig, false, PTER_SEED_LIST, PTER_TOR_ELE, PTER_TOR_SIZE, PTER_TOR_SEEDNUM);
+        nextlink = ssdHasNextPage(page, PTER_SEED_PAGE);
+        count++;
+        if ( nextlink ) {
+          if (count % 8 == 0) await sleep(3000);
+          page = await ssdGetNextPage(PTER_SEED_URL + nextlink);
+          intpage += 1;
+        }
+      }
+
+      // var firstlink = 'https://springsunday.net/torrents.php?team=1';
+      // await getPageList(firstlink, theConfig);
+      // await ssdGetPageList(fullLinkEle[0].href, theConfig);
+      showSumary(SSD_totalTorCount, SSD_totalTorSize, theConfig)
+      return true;
+    }
+    else return false;
+  }
 
 /// SSD seed pages 
 var SSD_SEED_PAGE = '#outer > div > p > font.gray';
@@ -1038,9 +1195,11 @@ var SSD_TOR_SIZE = 'td:nth-child(5)';
 var SSD_TOR_SEEDNUM = 'td:nth-child(6)'
 var SSD_totalTorCount = 0;
 var SSD_totalTorSize = 0;
+var SSD_selfGroupCount = 0;
+var SSD_selfGroupSize = 0;
 
-var parseSeedPage = (html, theConfig, seedColor) => {
-  var torlist = $(html).find(SSD_SEED_LIST)
+var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTorSize, eleTorSeedNum) => {
+  var torlist = $(html).find(eleSeedList)
   for (var i = 0; i < torlist.length; i++){
     var torName;
     var torSize;
@@ -1048,14 +1207,15 @@ var parseSeedPage = (html, theConfig, seedColor) => {
     var foundGroup;
 
     const element = torlist[i];
-    var item = $(element).find(SSD_TOR_ELE);
+    var item = $(element).find(eleTorItem);
     if (theConfig.useTitle) torName = item.attr('title');
     else torName = item.text();
     if (!torName) continue;
-    torSize = sizeStrToBytes($(element).find(SSD_TOR_SIZE).text());
+    torSize = sizeStrToBytes($(element).find(eleTorSize).text());
     SSD_totalTorCount ++;
     SSD_totalTorSize += torSize;
-    var foundConfig = config.find(cc => torName.match(cc.siteRegex))
+    var foundConfig = config.find(cc => torName.match(cc.siteRegex)), foundSelfGroup;
+
     if (foundConfig){
       foundConfig.torCount ++;
       if (foundConfig == theConfig) {
@@ -1064,7 +1224,14 @@ var parseSeedPage = (html, theConfig, seedColor) => {
           foundGroup.groupCount++;
           foundGroup.groupSize += torSize;
         }
-        torSeederNum = parseFloat($(element).find(SSD_TOR_SEEDNUM).text());
+        if (theConfig.abbrev === 'SSD') {
+            foundGroup = theConfig.self_groups.find(gg => torName.match(gg.groupRegex));
+            if (foundGroup){
+                foundGroup.groupCount++;
+                foundGroup.groupSize+= torSize;
+            }
+        }
+        torSeederNum = parseFloat($(element).find(eleTorSeedNum).text());
         if (seedColor){
           if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-2].seederNum) {
             $(element).css("background-color", "#ef6216"); 
@@ -1095,17 +1262,84 @@ var parseSeedPage = (html, theConfig, seedColor) => {
   return torlist;
 }
 
-var getNextPage = async (nextLink) => {
+var rlGetNextPage = async (nextLink) => {
   // var currentPageEle = $(html).find(SSD_SEED_PAGE).last();
-  var nextPageLink = SSD_SEED_URL + nextLink;
+  var nextPageLink = nextLink;
   console.log(nextPageLink);
   // $.get(nextPageLink).done(e => getPageList(e))
   var nextpage = await $.get(nextPageLink);
   return nextpage;
 };
 
-var hasNextPage = (html) => {
-  var  pageEleList = $(html).find(SSD_SEED_PAGE);
+var rlHasNextPageLink = (html, RL_PAGE) => {
+  // var currentPageEle = $(html).find(RL_PAGE);
+  // return currentPageEle.next().attr("href") ? true : false;
+
+  var currentPageEles = $(html).find(RL_PAGE );
+  if (!currentPageEles) return '';
+  var currentPageEle = currentPageEles[0];
+  // var currentPageEle;
+  // if (pageEleList[0].innerText.indexOf('一页') > 0){
+  //   currentPageEle= pageEleList[1];
+  // }
+  // else currentPageEle= pageEleList[0];
+  var link = $(currentPageEle).next().prop("href");
+  return link ? link : '';
+};
+
+
+var fetchRLSeedPages = async(seedHtml, theConfig) => {
+  var RL_PAGE = '#ka1 > p > font:nth-child(4)'
+  var fullLinkEle = $(seedHtml).find(RL_PAGE);
+  if (fullLinkEle.length > 0){
+
+    for (const x of theConfig.groups) {
+      x.groupCount = 0;
+      x.groupSize = 0;
+    }
+    totalTorCount = 0;
+    totalTorSize = 0;
+
+    var firstLink = fullLinkEle[0].href;
+    var intpage = 1;
+    var bNext = true;
+    var page = seedHtml;
+    // var page  = await $.get(firstLink);
+    // console.log(firstLink);
+    // var nextlink = firstLink;
+    var count = 0;
+    while ( bNext) {
+      debugger;
+      parseOneSeedPage(page, theConfig);
+      var nextlink = rlHasNextPageLink(page, RL_PAGE);
+      count++;
+      if ( nextlink ) {
+        if (count % 8 == 0) await sleep(3000);
+        page = await rlGetNextPage(nextlink);
+        intpage += 1;
+      }
+    }
+    showSumary(totalTorCount, totalTorSize, theConfig)
+    return true;
+  }
+  else return false;
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+var ssdGetNextPage = async (nextLink) => {
+  // var currentPageEle = $(html).find(SSD_SEED_PAGE).last();
+  var nextPageLink = nextLink
+  console.log(nextPageLink);
+  // $.get(nextPageLink).done(e => getPageList(e))
+  var nextpage = await $.get(nextPageLink);
+  return nextpage;
+};
+
+var ssdHasNextPage = (html, pageEle) => {
+  var  pageEleList = $(html).find(pageEle );
   if (!pageEleList) return '';
   var currentPageEle;
   if (pageEleList[0].innerText.indexOf('一页') > 0){
@@ -1116,28 +1350,6 @@ var hasNextPage = (html) => {
   return  link ? link : '';
 };
 
-var getPageList = async (firstLink, theConfig) => {
-  var intpage = 1;
-  var page  = await $.get(firstLink);
-  console.log(firstLink);
-  var nextlink = firstLink;
-  var count = 0;
-  while ( nextlink) {
-    var r =  parseSeedPage(page, theConfig, false);
-    nextlink = hasNextPage(page);
-    count++;
-    if ( nextlink ) {
-      if (count % 8 == 0) await sleep(3000);
-      page = await getNextPage(nextlink);
-      intpage += 1;
-    }
-  }
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 var hasSSDFullList = async (seedHtml, theConfig) => {
   var fullLinkEle = $(seedHtml).find('#ka1 > a:contains("完整记录")');
   if (fullLinkEle.length > 0){
@@ -1145,17 +1357,37 @@ var hasSSDFullList = async (seedHtml, theConfig) => {
       x.groupCount = 0;
       x.groupSize = 0;
     }
-    theConfig.torCount = 0;
-    theConfig.torSize = 0;
-  
+    SSD_totalTorCount = 0;
+    SSD_totalTorSize = 0;
+    // theConfig.torCount = 0;
+    // theConfig.torSize = 0;
+
+    var firstLink = fullLinkEle[0].href;
+    var intpage = 1;
+    var page  = await $.get(firstLink);
+    // console.log(firstLink);
+    var nextlink = firstLink;
+    var count = 0;
+    while ( nextlink) {
+      var r =  parseSeedPage(page, theConfig, false, SSD_SEED_LIST, SSD_TOR_ELE, SSD_TOR_SIZE, SSD_TOR_SEEDNUM);
+      nextlink = ssdHasNextPage(page, SSD_SEED_PAGE);
+      count++;
+      if ( nextlink ) {
+        if (count % 4 == 0) await sleep(3000);
+        page = await ssdGetNextPage(SSD_SEED_URL + nextlink);
+        intpage += 1;
+      }
+    }
+
     // var firstlink = 'https://springsunday.net/torrents.php?team=1';
-    // await getPageList(firstlink, theConfig);        
-    await getPageList(fullLinkEle[0].href, theConfig);
+    // await getPageList(firstlink, theConfig);
+    // await ssdGetPageList(fullLinkEle[0].href, theConfig);
     showSumary(SSD_totalTorCount, SSD_totalTorSize, theConfig)
     return true;
   }
   else return false;
 }
+
 
 function colorSeed(seedHtml, theConfig) {
   var seedList = seedHtml.querySelectorAll( theConfig.seedList );
@@ -1185,6 +1417,92 @@ function colorSeed(seedHtml, theConfig) {
     }
   }
 }
+
+var totalTorCount = 0;
+var totalTorSize = 0;
+
+function parseOneSeedPage(seedHtml, theConfig){
+  var seedList = seedHtml.querySelectorAll( theConfig.seedList );
+  var seedListSize = seedHtml.querySelectorAll( theConfig.seedListSize );
+  var seedListSeederNum = seedHtml.querySelectorAll( theConfig.seedListSeederCount );
+
+
+  for (var i = 0; i < seedList.length; i++) {
+    var torName;
+    var torSize;
+    var torSeederNum;
+    var foundGroup;
+    if (theConfig.useTitle) torName = seedList[i].title;
+    else torName = seedList[i].innerText;
+
+    if (theConfig.host in ["club.hares.top", "pt.eastgame.org"]) {
+      torSize = sizeStrToBytes(seedListSize[i].innerText);
+    }
+    else {
+      torSize = sizeStrToBytes(seedListSize[i + 1].innerText);
+    }
+    totalTorCount ++;
+    totalTorSize += torSize;
+
+    var foundConfig = config.find(cc => torName.match(cc.siteRegex))
+
+    // for pterclub, all game is counted as internal torrent
+    var isPTerGameCat = false;
+    if (theConfig.host == "pterclub.com") {
+      isPTerGameCat = seedList[i].href.match(/game.php\b/i);
+      if (isPTerGameCat) {
+        foundConfig = theConfig;
+      }
+    }
+
+    if (foundConfig){
+      foundConfig.torCount ++;
+      if (foundConfig == theConfig) {
+        if (isPTerGameCat) {
+          foundGroup = theConfig.groups.find(gg => (gg.groupName == '游戏'));
+        } else {
+          foundGroup = theConfig.groups.find(gg => torName.match(gg.groupRegex));
+        }
+        if (foundGroup){
+          foundGroup.groupCount++;
+          foundGroup.groupSize += torSize;
+        }
+        if (theConfig.abbrev === 'SSD') {
+            foundGroup = theConfig.self_groups.find(gg => torName.match(gg.groupRegex));
+            if (foundGroup) {
+                foundGroup.groupCount++;
+                foundGroup.groupSize += torSize;
+            }
+        }
+        // cat the seeder level
+        torSeederNum = parseFloat(seedListSeederNum[i+1].innerText);
+        if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-2].seederNum) {
+          seedList[i].parentNode.style = "background-color: #ef6216"; 
+        }
+        else if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-1].seederNum) {
+          seedList[i].parentNode.style = "background-color: #f9f"; 
+        }
+        else {
+          seedList[i].parentNode.style = "background-color: lightgreen;";
+        }
+
+        for (var sl=0; sl < theConfig.seederLevels.length; sl++) {
+          if (torSeederNum < theConfig.seederLevels[sl].seederNum) {
+            theConfig.seederLevels[sl].seederLevelCount++;
+            theConfig.seederLevels[sl].seederLevelSize += torSize;
+            break;
+          }
+        }
+
+      }
+      foundConfig.torSize += torSize;
+    } else {
+      config[OTHERS_INDEX].torCount ++;
+      config[OTHERS_INDEX].torSize += torSize;
+    }
+  }
+}
+
 async function getSeedList(seedHtml, theConfig) {
     var sumaryShown = false;
     if (theConfig.host == "springsunday.net"){
@@ -1194,80 +1512,26 @@ async function getSeedList(seedHtml, theConfig) {
         return;
       }
     }
-
-    var seedList = seedHtml.querySelectorAll( theConfig.seedList );
-    var seedListSize = seedHtml.querySelectorAll( theConfig.seedListSize );
-    var seedListSeederNum = seedHtml.querySelectorAll( theConfig.seedListSeederCount );
-
-    var totalTorCount = 0;
-    var totalTorSize = 0;
-  
-    for (var i = 0; i < seedList.length; i++) {
-      var torName;
-      var torSize;
-      var torSeederNum;
-      var foundGroup;
-      if (theConfig.useTitle) torName = seedList[i].title;
-      else torName = seedList[i].innerText;
-  
-      if (theConfig.host in ["club.hares.top", "pt.eastgame.org"]) {
-        torSize = sizeStrToBytes(seedListSize[i].innerText);
-      }
-      else {
-        torSize = sizeStrToBytes(seedListSize[i + 1].innerText);
-      }
-      totalTorCount ++;
-      totalTorSize += torSize;
-  
-      var foundConfig = config.find(cc => torName.match(cc.siteRegex))
-      // for pterclub, all game is counted as internal torrent
-      var isPTerGameCat = false;
-      if (theConfig.host == "pterclub.com") {
-        isPTerGameCat = seedList[i].href.match(/game.php\b/i);
-        if (isPTerGameCat) {
-          foundConfig = theConfig;
-        }
-      }
-  
-      if (foundConfig){
-        foundConfig.torCount ++;
-        if (foundConfig == theConfig) {
-          if (isPTerGameCat) {
-            foundGroup = theConfig.groups.find(gg => (gg.groupName == '游戏'));
-          } else {
-            foundGroup = theConfig.groups.find(gg => torName.match(gg.groupRegex));
-          }
-          if (foundGroup){
-            foundGroup.groupCount++;
-            foundGroup.groupSize += torSize;
-          }
-          // cat the seeder level
-          torSeederNum = parseFloat(seedListSeederNum[i+1].innerText);
-          if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-2].seederNum) {
-            seedList[i].parentNode.style = "background-color: #ef6216"; 
-          }
-          else if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-1].seederNum) {
-            seedList[i].parentNode.style = "background-color: #f9f"; 
-          }
-          else {
-            seedList[i].parentNode.style = "background-color: lightgreen;";
-          }
-  
-          for (var sl=0; sl < theConfig.seederLevels.length; sl++) {
-            if (torSeederNum < theConfig.seederLevels[sl].seederNum) {
-              theConfig.seederLevels[sl].seederLevelCount++;
-              theConfig.seederLevels[sl].seederLevelSize += torSize;
-              break;
-            }
-          }
-  
-        }
-        foundConfig.torSize += torSize;
-      } else {
-        config[OTHERS_INDEX].torCount ++;
-        config[OTHERS_INDEX].torSize += torSize;
+    else if (theConfig.host == "pterclub.com"){
+      sumaryShown = await fetchPTerSeedPages(seedHtml, theConfig)
+      if (sumaryShown) {
+        colorSeed(seedHtml, theConfig)
+        return;
       }
     }
+    else if (theConfig.host == "leaves.red"){
+      sumaryShown = await fetchRLSeedPages(seedHtml, theConfig)
+      if (sumaryShown) {
+        colorSeed(seedHtml, theConfig)
+        return;
+      }
+    }
+    totalTorCount = 0;
+    totalTorSize = 0;
+
+    parseOneSeedPage(seedHtml, theConfig)
+    colorSeed(seedHtml, theConfig)
+
     if (!sumaryShown){
       showSumary(totalTorCount, totalTorSize, theConfig)
     }
@@ -1277,13 +1541,12 @@ async function getSeedList(seedHtml, theConfig) {
   {
     GM_addStyle("#ot_block {font-weight: bold;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}");
     GM_addStyle("#ot_block td, #ot_summary th{vertical-align: top;border: none;padding: 18px;}");
-  
     GM_addStyle("#ot_summary {font-weight: normal;font-family: Arial, Helvetica, sans-serif;border-collapse: collapse; width: 100%;}");
     GM_addStyle("#ot_summary tr:nth-child(even){background-color: #f2f2f2;}");
     GM_addStyle("#ot_summary tr:hover {background-color: #ddd;}");
     GM_addStyle("#ot_summary td, #ot_summary th{border: 1px solid #ddd;padding: 4px;}");
     GM_addStyle("#ot_summary th{padding-top: 6px;padding-bottom: 6px;text-align: left;color: white;background-color: #2f4879;}");
-  
+
     var groupSumary = '<table id="ot_summary"><tbody><th>官组</th><th>数量</th><th>大小</th>';
     for (var i=0; i<theConfig.groups.length; i++){
       if (theConfig.groups[i].groupCount >0){
@@ -1291,7 +1554,18 @@ async function getSeedList(seedHtml, theConfig) {
       }
     }
     groupSumary += '</tbody></table>';
-  
+
+    let selfGroupSumary = '';
+    if (theConfig.abbrev === 'SSD'){
+        selfGroupSumary = '<table id="ot_summary"><tbody><th>制作组</th><th>数量</th><th>大小</th>';
+        for (i=0; i<theConfig.self_groups.length; i++){
+            if (theConfig.self_groups[i].groupCount >0){
+                selfGroupSumary += '<tr><td>'+theConfig.self_groups[i].groupName+'</td><td>'+theConfig.self_groups[i].groupCount+'</td><td>' +formatBytes(theConfig.self_groups[i].groupSize)+'</td></tr>';
+            }
+        }
+        selfGroupSumary += '</tbody></table>';
+    }
+
     var seederLevelSumary = '';
     if (theConfig.seederLevels.length > 0) {
       seederLevelSumary = '<table id="ot_summary"><tbody><th>做种人数</th><th>数量</th><th>大小</th>';
@@ -1300,9 +1574,9 @@ async function getSeedList(seedHtml, theConfig) {
           + theConfig.seederLevels[i].seederLevelCount+'</td><td>'
           + formatBytes(theConfig.seederLevels[i].seederLevelSize)+'</td></tr>';
       }
-      seederLevelSumary += '</tbody></table>';      
+      seederLevelSumary += '</tbody></table>';
     }
-  
+
     var sitesSumary = '<table id="ot_summary"><tbody><th>各站官种</th><th>数量</th><th>大小</th>';
     for (i=0; i<config.length; i++ )
     {
@@ -1313,17 +1587,22 @@ async function getSeedList(seedHtml, theConfig) {
       }
     }
     sitesSumary += '</tbody></table>';
-  
-  
+
     var summary = document.querySelector(theConfig.seedingSummary);
-    summary.innerHTML = '<table id="ot_block"><tbody><tr><td>'
-      + '做种总数：' + totalTorCount + ' 总大小： '+ formatBytes(totalTorSize) + '<br>' 
-      + sitesSumary + '</td><td>'
-      + '<div>本站官种数量：' + theConfig.torCount + ' 官种大小： '+ formatBytes(theConfig.torSize) + '<br>' 
-      + groupSumary 
-      + '</div><div><p>' + seederLevelSumary +'</div>'
-      + '</td></tr></tbody></table>'+summary.innerHTML ;
-  
+    let inner = '<table id="ot_block"><tbody><tr><td>';
+    inner += '做种总数：' + totalTorCount + ' 总大小： '+ formatBytes(totalTorSize) + '<br>' + sitesSumary + '</td>';
+
+    if (theConfig.abbrev === 'SSD'){
+        inner += '<td><div>本站官种/制作组种数量：' + theConfig.torCount + ' 官种/制作组种大小： '+ formatBytes(theConfig.torSize) + '<br>' + groupSumary + '</div>'
+        inner += '<div>' + selfGroupSumary + '</div>'
+    } else {
+        inner += '<td><div>本站官种数量：' + theConfig.torCount + ' 官种大小： '+ formatBytes(theConfig.torSize) + '<br>' + groupSumary + '</div>'
+    }
+
+    inner += '<div><p>' + seederLevelSumary +'</div>'
+    inner += '</td></tr></tbody></table>'+summary.innerHTML ;
+
+    summary.innerHTML = inner;
   }
 
 
@@ -1476,7 +1755,12 @@ async function getSeedList(seedHtml, theConfig) {
   
     if (window.location.host == "springsunday.net" && window.location.pathname.indexOf("torrents.php") > 0 ){
       var ssdconfig = config.find(cc => window.location.host.includes(cc.host));
-      parseSeedPage(document, ssdconfig, true);
+      parseSeedPage(document, ssdconfig, true, SSD_SEED_LIST, SSD_TOR_ELE, SSD_TOR_SIZE, SSD_TOR_SEEDNUM);
+      return;
+    }
+    if (window.location.host == "pterclub.com" && window.location.pathname.indexOf("getusertorrentlist.php") > 0 ){
+      var pterconfig = config.find(cc => window.location.host.includes(cc.host));
+      parseSeedPage(document, pterconfig, true, PTER_SEED_LIST, PTER_TOR_ELE, PTER_TOR_SIZE, PTER_TOR_SEEDNUM);
       return;
     }
     if (window.location.host == "totheglory.im") {
