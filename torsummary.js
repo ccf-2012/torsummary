@@ -40,9 +40,9 @@ var config = [
     {
       host: "audiences.me",
       abbrev: "Audiences",
-      seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
-      seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
-      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      seedList: '#ka1 > table[width="100%"] > tbody > tr > td:nth-child(2) > a',
+      seedListSize: '#ka1 >  table[width="100%"] > tbody > tr > td:nth-child(3)',
+      seedListSeederCount: '#ka1 > table[width="100%"] > tbody > tr > td:nth-child(4)',
       seedingSummary: "#ka1 > b",
       uploadSummary: "#ka ",
       uploadDateCol: "td:nth-child(8)",
@@ -1376,7 +1376,7 @@ var hasSSDFullList = async (seedHtml, theConfig) => {
       nextlink = ssdHasNextPage(page, SSD_SEED_PAGE);
       count++;
       if ( nextlink ) {
-        if (count % 4 == 0) await sleep(3000);
+        if (count % 8 == 0) await sleep(3000);
         page = await ssdGetNextPage(SSD_SEED_URL + nextlink);
         intpage += 1;
       }
