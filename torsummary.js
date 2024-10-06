@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         官种保种统计
 // @namespace    https://greasyfork.org/zh-CN/scripts/432969
-// @version      0.16.7
+// @version      0.16.9
 // @license      GPL-3.0 License
 // @description  Count the seeding torrents, support Audiences, PTer, SKY, OB, CHD, Hares, PTH, hddolby, tjupt, TTG, HDH, SSD, HDC, PtSbao, btschool, TLF, beAst
 // @author       ccf2012
@@ -39,23 +39,23 @@
 var config = [
     {
       host: "audiences.me",
-      abbrev: "Audiences", 
-      seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
-      seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
-      seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
+      abbrev: "Audiences",
+      seedList: '#ka1 > table[width="100%"] > tbody > tr > td:nth-child(2) > a',
+      seedListSize: '#ka1 >  table[width="100%"] > tbody > tr > td:nth-child(3)',
+      seedListSeederCount: '#ka1 > table[width="100%"] > tbody > tr > td:nth-child(4)',
       seedingSummary: "#ka1 > b",
       uploadSummary: "#ka ",
       uploadDateCol: "td:nth-child(8)",
       uploadSizeCol: "td:nth-child(3)",
       siteRegex: /[@-]\s?(Audies|ADE|ADWeb|ADAudio|ADeBook|ADMusic)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'Audies',
           groupRegex : /[@-]\s?(Audies)\b/i,
           groupCount: 0,
@@ -90,14 +90,14 @@ var config = [
           groupRegex: /[@-]\s?(ADMusic)\b/i,
           groupCount: 0,
           groupSize: 0,
-        }, 
+        },
       ],    useTitle: true,
       torCount: 0,
       torSize: 0,
     },
     {
       host : "hdsky.me",
-      abbrev: "SKY", 
+      abbrev: "SKY",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
@@ -108,13 +108,13 @@ var config = [
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0}],
       groups: [
-        { 
+        {
           groupName: 'HDSky',
           groupRegex : /[@-]\s?(HDSky)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
-        { 
+        {
           groupName: 'HDS',
           groupRegex : /[@-]\s?(HDS)\b/i,
           groupCount: 0,
@@ -151,20 +151,20 @@ var config = [
     },
     {
       host: "pterclub.com",
-      abbrev: "PTer", 
+      abbrev: "PTer",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a:nth-child(1)",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(5)",
       seedingSummary: "#ka1",
       siteRegex: /[@-]\s?(PTer)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0}],
       groups: [
-        { 
+        {
           groupName: 'PTer',
           groupRegex : /[@-]\s?(PTer)\b/i,
           groupCount: 0,
@@ -201,21 +201,21 @@ var config = [
     },
     {
       host: "ourbits.club",
-      abbrev: "OB", 
+      abbrev: "OB",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(Our|PbK|iLoveTV|FLTTH|Ao|MGs|HosT|iLoveHD)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'OurBits',
           groupRegex : /[@-]\s?(OurBits)\b/i,
           groupCount: 0,
@@ -262,7 +262,7 @@ var config = [
           groupRegex: /[@-]\s?(iLoveHD)\b/i,
           groupCount: 0,
           groupSize: 0,
-        }      
+        }
       ],
       useTitle: true,
       torCount: 0,
@@ -270,7 +270,7 @@ var config = [
     },
     {
       host: "chdbits.co",
-      abbrev: "CHD", 
+      abbrev: "CHD",
       seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
@@ -280,7 +280,7 @@ var config = [
       uploadSizeCol: "td:nth-child(3)",
       siteRegex: /[@-]\s?(CHD|blucook|HQC|GBT|KAN|OneHD)/i,
       seederLevels: [
-        {seederNum: 2, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 2, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 4, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
@@ -288,7 +288,7 @@ var config = [
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0}],
       groups: [
-        { 
+        {
           groupName: 'CHD',
           groupRegex : /[@-]\s?(CHD)\b/i,
           groupCount: 0,
@@ -342,20 +342,20 @@ var config = [
     },
     {
       host: "club.hares.top",
-      abbrev: "Hares", 
+      abbrev: "Hares",
       seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(Hares)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'Hares',
           groupRegex : /[@-]\s?(Hares)\b/i,
           groupCount: 0,
@@ -380,20 +380,20 @@ var config = [
     },
     {
       host: "pthome.net",
-      abbrev: "PTH", 
+      abbrev: "PTH",
       seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(PTH)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'PTHome',
           groupRegex : /[@-]\s?(PTHome)\b/i,
           groupCount: 0,
@@ -428,7 +428,7 @@ var config = [
           groupRegex: /[@-]\s?(PTHAudio)\b/i,
           groupCount: 0,
           groupSize: 0,
-        },     
+        },
         {
           groupName: 'PTHmusic',
           groupRegex: /[@-]\s?(PTHmusic)\b/i,
@@ -441,12 +441,12 @@ var config = [
     },
     {
       host: "springsunday.net",
-      abbrev: "SSD", 
-      seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
+      abbrev: "SSD",
+      seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > div > a",
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
-      siteRegex: /[@-]\s?(CMCT|Oldboys|XY|iFree|RO|CatEDU|7³ACG|Anonymous|Telesto|GTR|Lislander|Crazyleikm|GrassTV)/i,
+      siteRegex: /[@-]\s?(CMCT|Oldboys|XY|iFree|RO|CatEDU|7³ACG|Anonymous|Telesto|GTR|Lislander|Crazyleikm|NOVOLAND)/i,
       seederLevels: [
         {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
@@ -456,7 +456,7 @@ var config = [
         {seederNum: 9999, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'CMCT',
           groupRegex : /[@-]\s?(CMCT)\b/i,
           groupCount: 0,
@@ -543,8 +543,8 @@ var config = [
           groupSize: 0,
         },
         {
-          groupName: 'GrassTV',
-          groupRegex: /[@-]\s?(GrassTV)\b/i,
+          groupName: 'NOVOLAND',
+          groupRegex: /[@-]\s?(NOVOLAND)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
@@ -557,20 +557,20 @@ var config = [
     },
     {
       host: "hdhome.org",
-      abbrev: "HDH", 
+      abbrev: "HDH",
       seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(HDH)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'HDHome',
           groupRegex : /[@-]\s?(HDHome)\b/i,
           groupCount: 0,
@@ -607,7 +607,7 @@ var config = [
     },
     {
       host: "hdchina.org",
-      abbrev: "HDC", 
+      abbrev: "HDC",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
@@ -619,19 +619,19 @@ var config = [
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 30, seederLevelCount: 0, seederLevelSize: 0}],
       groups: [
-        { 
+        {
           groupName: 'HDChina',
           groupRegex : /[@-]\s?(HDChina)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
-        { 
+        {
           groupName: 'HDCTV',
           groupRegex : /[@-]\s?(HDCTV)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
-        { 
+        {
           groupName: 'HDC',
           groupRegex : /[@-]\s?(HDC)\b/i,
           groupCount: 0,
@@ -675,20 +675,20 @@ var config = [
     },
     {
       host: "hddolby.com",
-      abbrev: "DB", 
+      abbrev: "DB",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(Dream|DBTV|QHstudIo|HDo)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'Dream',
           groupRegex : /[@-]\s?(Dream)\b/i,
           groupCount: 0,
@@ -719,20 +719,20 @@ var config = [
     },
     {
       host: "tjupt.org",
-      abbrev: "TJU", 
+      abbrev: "TJU",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(TJUPT)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'TJUPT',
           groupRegex : /[@-]\s?(TJUPT)\b/i,
           groupCount: 0,
@@ -745,26 +745,26 @@ var config = [
     },
     {
       host: "leaves.red",
-      abbrev: "RedLeaves", 
+      abbrev: "RedLeaves",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(5)",
       seedingSummary: "#ka1",
       siteRegex: /[@-]\s?(RL)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'RL',
           groupRegex : /[@-]\s?(RL)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
-        { 
+        {
           groupName: 'RL4B',
           groupRegex : /[@-]\s?(RL4B)\b/i,
           groupCount: 0,
@@ -774,10 +774,10 @@ var config = [
       useTitle: true,
       torCount: 0,
       torSize: 0,
-    },    
+    },
     {
       host: "totheglory.im",
-      abbrev: "TTG", 
+      abbrev: "TTG",
       seedList: "#ka2 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka2 > table > tbody > tr > td:nth-child(4)",
       seedListSeederCount: "#ka2 > table > tbody > tr > td:nth-child(5)",
@@ -785,13 +785,13 @@ var config = [
         "#ka2",
       siteRegex: /[@-]\s?(TTG|Wiki|NGB|DoA|ARiN|ExREN)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0}],
       groups: [
-        { 
+        {
           groupName: 'TTG',
           groupRegex : /[@-]\s?(TTG)\b/i,
           groupCount: 0,
@@ -834,20 +834,20 @@ var config = [
     },
     {
       host: "ptsbao.club",
-      abbrev: "PtSbao", 
+      abbrev: "PtSbao",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(OPS|FFans|FHDMv)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'OPS',
           groupRegex : /[@-]\s?(OPS)\b/i,
           groupCount: 0,
@@ -890,21 +890,21 @@ var config = [
     },
     {
       host: "pt.btschool.club",
-      abbrev: "Bts", 
+      abbrev: "Bts",
       seedList: "#ka1 >  table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 >  table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(Bts)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0},
       ],
       groups: [
-        { 
+        {
           groupName: 'BtsHD',
           groupRegex : /[@-]\s?(BtsHD)\b/i,
           groupCount: 0,
@@ -935,7 +935,7 @@ var config = [
     },
     {
       host: "pt.keepfrds.com",
-      abbrev: "FRDS", 
+      abbrev: "FRDS",
       seedList: "",
       seedListSize: "",
       seedingSummary: "",
@@ -948,7 +948,7 @@ var config = [
     },
     {
       host: "beitai.pt",
-      abbrev: "BeiTai", 
+      abbrev: "BeiTai",
       seedList: "",
       seedListSize: "",
       seedingSummary: "",
@@ -961,7 +961,7 @@ var config = [
     },
     {
       host: "lemonhd.org",
-      abbrev: "LemonHD", 
+      abbrev: "LemonHD",
       seedList: "",
       seedListSize: "",
       seedingSummary: "",
@@ -974,32 +974,32 @@ var config = [
     },
     {
       host: "pt.hd4fans.org",
-      abbrev: "beAst", 
+      abbrev: "beAst",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1",
       siteRegex: /[@-]\s?(beAst)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0},
       ],
       groups:[
-        { 
+        {
           groupName: 'beAst',
           groupRegex : /[@-]\s?(beAst)\b/i,
           groupCount: 0,
           groupSize: 0,
-        },        
-        { 
+        },
+        {
           groupName: 'beAstTV',
           groupRegex : /[@-]\s?(beAstTV)\b/i,
           groupCount: 0,
           groupSize: 0,
-        },        
+        },
 
       ],
       useTitle: true,
@@ -1008,56 +1008,56 @@ var config = [
     },
     {
       host: "pt.eastgame.org",
-      abbrev: "TLFbits", 
+      abbrev: "TLFbits",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(3)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedingSummary: "#ka1",
       siteRegex: /[@-]\s?(TLF)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 20, seederLevelCount: 0, seederLevelSize: 0},
       ],
       groups:[
-        { 
+        {
           groupName: 'iNT-TLF',
           groupRegex : /[@. -](iNT-TLF)\b/i,
           groupCount: 0,
           groupSize: 0,
-        },        
-        { 
+        },
+        {
           groupName: 'HALFCD-TLF',
           groupRegex : /[@ .](HALFCD-TLF)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
-        { 
+        {
           groupName: 'MiniSD-TLF',
           groupRegex : /[@ .](MiniSD-TLF)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
-        { 
+        {
           groupName: 'MiniHD-TLF',
           groupRegex : /[@ .](MiniHD-TLF)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
-        { 
+        {
           groupName: 'MiniFHD-TLF',
           groupRegex : /[@ .](MiniFHD-TLF)\b/i,
           groupCount: 0,
           groupSize: 0,
         },
-        { 
+        {
           groupName: 'TLF',
           groupRegex : /[@-]\s?(TLF)\b/i,
           groupCount: 0,
           groupSize: 0,
-        },        
+        },
       ],
       useTitle: true,
       torCount: 0,
@@ -1065,20 +1065,20 @@ var config = [
     },
     {
       host: "hhanclub.top",
-      abbrev: "HH", 
+      abbrev: "HH",
       seedList: "#ka1 > table > tbody > tr > td:nth-child(2) > a ",
       seedListSize: "#ka1 > table > tbody > tr > td:nth-child(4)",
       seedListSeederCount: "#ka1 > table > tbody > tr > td:nth-child(5)",
       seedingSummary: "#ka1 > b",
       siteRegex: /[@-]\s?(HHWEB)/i,
       seederLevels: [
-        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0}, 
+        {seederNum: 3, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 5, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 7, seederLevelCount: 0, seederLevelSize: 0},
         {seederNum: 11, seederLevelCount: 0, seederLevelSize: 0}
       ],
       groups: [
-        { 
+        {
           groupName: 'HHWEB',
           groupRegex : /[@-]\s?(HHWEB)\b/i,
           groupCount: 0,
@@ -1091,7 +1091,7 @@ var config = [
     },
     {
       host: "google.com",
-      abbrev: "Others", 
+      abbrev: "Others",
       seedList: "",
       seedListSize: "",
       seedingSummary:"",
@@ -1103,22 +1103,22 @@ var config = [
       torSize: 0,
     },
   ];
-  
+
   const TTG_INDEX = 12;
   var OTHERS_INDEX = config.length-1;
-  
+
   function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return "0 Bytes";
-  
+
     const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
     const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  
+
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   }
-  
+
   function sizeStrToBytes(sizeStr) {
     var regex = /[+-]?\d+(\.\d+)?/g;
     var sizeStr2 = sizeStr.replace(/,/g, '');
@@ -1137,7 +1137,7 @@ var config = [
     } else {
       size = num;
     }
-  
+
     return size;
   }
 
@@ -1147,7 +1147,7 @@ var config = [
   var PTER_TOR_ELE = 'td:nth-child(2) > a';
   var PTER_TOR_SIZE = 'td:nth-child(4)';
   var PTER_TOR_SEEDNUM = 'td:nth-child(5)'
-  
+
   var fetchPTerSeedPages = async (seedHtml, theConfig) => {
     var fullLinkEle = $(seedHtml).find('#ka1 > a:contains("查看全部记录")');
     if (fullLinkEle.length > 0){
@@ -1159,7 +1159,7 @@ var config = [
       SSD_totalTorSize = 0;
       // theConfig.torCount = 0;
       // theConfig.torSize = 0;
-    
+
       var firstLink = fullLinkEle[0].href;
       var intpage = 1;
       var page  = await $.get(firstLink);
@@ -1186,7 +1186,7 @@ var config = [
     else return false;
   }
 
-/// SSD seed pages 
+/// SSD seed pages
 var SSD_SEED_PAGE = '#outer > div > p > font.gray';
 var SSD_SEED_LIST = 'table.torrents > tbody > tr';
 var SSD_SEED_URL = 'https://springsunday.net/torrents.php';
@@ -1208,7 +1208,10 @@ var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTor
 
     const element = torlist[i];
     var item = $(element).find(eleTorItem);
-    if (theConfig.useTitle) torName = item.attr('title');
+    if (theConfig.useTitle){
+        torName = item.attr('title');
+        if (!torName) torName = $(element).find("div.torrent-title > span > span > a").text();
+    }
     else torName = item.text();
     if (!torName) continue;
     torSize = sizeStrToBytes($(element).find(eleTorSize).text());
@@ -1234,13 +1237,13 @@ var parseSeedPage = (html, theConfig, seedColor, eleSeedList, eleTorItem, eleTor
         torSeederNum = parseFloat($(element).find(eleTorSeedNum).text());
         if (seedColor){
           if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-2].seederNum) {
-            $(element).css("background-color", "#ef6216"); 
+            $(element).css("background-color", "#ef6216");
           }
           else if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-1].seederNum) {
-            $(element).css("background-color", "#f9f"); 
+            $(element).css("background-color", "#f9f");
           }
           else {
-            $(element).css("background-color", "lightgreen"); 
+            $(element).css("background-color", "lightgreen");
           }
         }
 
@@ -1373,7 +1376,7 @@ var hasSSDFullList = async (seedHtml, theConfig) => {
       nextlink = ssdHasNextPage(page, SSD_SEED_PAGE);
       count++;
       if ( nextlink ) {
-        if (count % 4 == 0) await sleep(3000);
+        if (count % 8 == 0) await sleep(3000);
         page = await ssdGetNextPage(SSD_SEED_URL + nextlink);
         intpage += 1;
       }
@@ -1426,7 +1429,6 @@ function parseOneSeedPage(seedHtml, theConfig){
   var seedListSize = seedHtml.querySelectorAll( theConfig.seedListSize );
   var seedListSeederNum = seedHtml.querySelectorAll( theConfig.seedListSeederCount );
 
-
   for (var i = 0; i < seedList.length; i++) {
     var torName;
     var torSize;
@@ -1477,10 +1479,10 @@ function parseOneSeedPage(seedHtml, theConfig){
         // cat the seeder level
         torSeederNum = parseFloat(seedListSeederNum[i+1].innerText);
         if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-2].seederNum) {
-          seedList[i].parentNode.style = "background-color: #ef6216"; 
+          seedList[i].parentNode.style = "background-color: #ef6216";
         }
         else if (torSeederNum < theConfig.seederLevels[theConfig.seederLevels.length-1].seederNum) {
-          seedList[i].parentNode.style = "background-color: #f9f"; 
+          seedList[i].parentNode.style = "background-color: #f9f";
         }
         else {
           seedList[i].parentNode.style = "background-color: lightgreen;";
@@ -1582,7 +1584,7 @@ async function getSeedList(seedHtml, theConfig) {
     {
       if (config[i].torCount > 0) {
         sitesSumary += '<tr><td><a href="https://'+config[i].host+'" target="_blank">'+config[i].abbrev + '</a></td><td>'
-          + config[i].torCount + '</td><td>' 
+          + config[i].torCount + '</td><td>'
           + formatBytes(config[i].torSize) + '</td></tr>';
       }
     }
@@ -1626,7 +1628,7 @@ async function getSeedList(seedHtml, theConfig) {
       return "unknow"
     }
   }
-  
+
 
   /** Function that count occurrences of a substring in a string;
    * @param {String} string               The string
@@ -1665,8 +1667,8 @@ async function getSeedList(seedHtml, theConfig) {
     let nBluray = occurrences(catStr, "Bluray");
     let nUnknow = occurrences(catStr, "unknow");
 
-    let tstr = (nRemux ? "Remux: " +nRemux : "") + (nWebdl ? " Webdl: " +nWebdl : "") 
-      + (nDvdrip ? " DVD: " +nDvdrip : "") + (nEncode ? " Encode: " +nEncode : "") 
+    let tstr = (nRemux ? "Remux: " +nRemux : "") + (nWebdl ? " Webdl: " +nWebdl : "")
+      + (nDvdrip ? " DVD: " +nDvdrip : "") + (nEncode ? " Encode: " +nEncode : "")
       + (nBluray ? " Bluray: " +nBluray : "") + (nUnknow ? " unknow: " +nUnknow : "");
 
     return tstr;
@@ -1681,7 +1683,7 @@ async function getSeedList(seedHtml, theConfig) {
     d.setMonth(d.getMonth() + 1);
     d.setDate(1);
     d.setHours(0,0,0,0);
-    
+
     var MONTH_TOTAL = 24
     var dataSep = [];
     var dataCount = [];
@@ -1705,7 +1707,7 @@ async function getSeedList(seedHtml, theConfig) {
     // var uploadList = seedHtml.querySelectorAll( theConfig.uploadTime );
     var torlist = $(seedHtml).find('#ka > table > tbody > tr')
     for (let i=0; i < torlist.length; ++i){
-      let uptime;  
+      let uptime;
       if (theConfig.uploadDateCol.indexOf('span') > 0){
         uptime = $(torlist[i]).find(theConfig.uploadDateCol).attr("title")
       }
@@ -1736,23 +1738,23 @@ async function getSeedList(seedHtml, theConfig) {
     {
       if (dataCount[i] > 0) {
         let datestr = dataSep[i].toLocaleString('default', { year:'numeric', month: 'long' });
-        
+
         uploadSummaryTable += '<tr><td>'+datestr + '</a></td><td>'
-          + dataCount[i] + '</td><td>' 
-          + categoryStr(catStr[i]) + '</td><td>' 
+          + dataCount[i] + '</td><td>'
+          + categoryStr(catStr[i]) + '</td><td>'
           + formatBytes(dataSize[i]) + '</td></tr>';
       }
     }
     uploadSummaryTable += '</tbody></table>';
-      
+
     var summary = document.querySelector(theConfig.uploadSummary);
     summary.innerHTML = uploadSummaryTable + summary.innerHTML ;
     return dataCount
   }
-  
+
   (function () {
     "use strict";
-  
+
     if (window.location.host == "springsunday.net" && window.location.pathname.indexOf("torrents.php") > 0 ){
       var ssdconfig = config.find(cc => window.location.host.includes(cc.host));
       parseSeedPage(document, ssdconfig, true, SSD_SEED_LIST, SSD_TOR_ELE, SSD_TOR_SIZE, SSD_TOR_SEEDNUM);
@@ -1776,12 +1778,11 @@ async function getSeedList(seedHtml, theConfig) {
 
         //when element is found, clear the interval.
         clearInterval(intv);
-        
+
         var thisConfig = config.find(cc => window.location.host.includes(cc.host));
         if (thisConfig && elems.length > 0) getSeedList(document, thisConfig);
         if (thisConfig && elemUp.length > 0) getUploadList(document, thisConfig);
       }, 1000);
     }
-    
+
   })();
-  
